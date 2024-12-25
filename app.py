@@ -7,10 +7,7 @@ import plotly.express as px
 import json
 from datetime import datetime
 import numpy as np
-
-
-
-
+from fonctions import visualise, consomation,consomation_energie,anomali
 
 
 def image_to_base64(image_path):
@@ -34,21 +31,28 @@ st.sidebar.markdown(
 )
 
 
-st.markdown(f"<h1 style='text-align: center'>Wave2</h1>", unsafe_allow_html=True)
+st.markdown(f"<h1 style='text-align: center'>Wave 2</h1>", unsafe_allow_html=True)
 
-uploaded_file = st.sidebar.file_uploader("Charger les données laboratoires", type=["xlsx", "xls"])
 
-#---------------------------------------------Chargement des données-----------------------------------------------------
-if uploaded_file is None:
-    st.sidebar.info("Upload a file through config")
-    st.stop()
 
-st.sidebar.markdown("<p style='text-align: center;'>Fichier téléchargé avec succès!</p>",unsafe_allow_html=True)
-sheets =["SELF CLEANING","UF","RO-A","RO-B","RO-C","RO-D","PRODUCTION"]
-data = {}
-for sheet in sheets:
-        data[sheet] = pd.read_excel(uploaded_file,sheet_name=sheet)
-don = st.sidebar.radio('Phases de traitement:',
+traitement = st.sidebar.selectbox('Traitement:',[
+                                                'Visualisation des paramètres',
+                                                'Consomation de produis chimiques',
+                                                'Consomation denergie',
+                                                "Anomalies"])
+if traitement == 'Visualisation des paramètres':
+    # uploaded_file = st.sidebar.file_uploader("Charger les données laboratoires", type=["xlsx", "xls"])
+
+    # #---------------------------------------------Chargement des données-----------------------------------------------------
+    # if uploaded_file is None:
+    #     st.sidebar.info("Upload a file through config")
+    #     st.stop()
+    st.sidebar.markdown("<p style='text-align: center;'>Fichier téléchargé avec succès!</p>",unsafe_allow_html=True)
+    sheets =["SELF CLEANING","UF","RO-A","RO-B","RO-C","RO-D","PRODUCTION"]
+    data = {}
+    for sheet in sheets:
+            data[sheet] = pd.read_excel('SUIVI DIPS (1).xlsx',sheet_name=sheet)
+    don = st.sidebar.radio('Phases de traitement:',
                                     [
                                         "SELF CLEANING",
                                         "UF",
@@ -58,38 +62,42 @@ don = st.sidebar.radio('Phases de traitement:',
                                         "RO-D",
                                         "PRODUCTION"
                                         ])  
-df = pd.read_excel(uploaded_file,sheet_name=don)
+    df = pd.read_excel('SUIVI DIPS (1).xlsx',sheet_name=don)
 
-df['date'] = pd.to_datetime(df['date'])
-df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format to 'dd/mm/yyyy'
+    df['date'] = pd.to_datetime(df['date'])
+    df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format to 'dd/mm/yyyy'
 
-# Start and end dates for filtering (convert back to datetime)
-startDate = pd.to_datetime(df["date"], format='%d/%m/%Y').min()
-endDate = pd.to_datetime(df["date"], format='%d/%m/%Y').max()
+    # Start and end dates for filtering (convert back to datetime)
+    startDate = pd.to_datetime(df["date"], format='%d/%m/%Y').min()
+    endDate = pd.to_datetime(df["date"], format='%d/%m/%Y').max()
 
-col1, col2 = st.columns((2))
-with col1:
-    date1 = pd.to_datetime(st.sidebar.date_input("Start Date", startDate))
-with col2:
-    date2 = pd.to_datetime(st.sidebar.date_input("End Date", endDate))
+    col1, col2 = st.columns((2))
+    with col1:
+        date1 = pd.to_datetime(st.date_input("Start Date", startDate))
+    with col2:
+        date2 = pd.to_datetime(st.date_input("End Date", endDate))
 
-# Convert back to datetime for filtering
-df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
-df = df[(df["date"] >= date1) & (df["date"] <= date2)]
+    # Convert back to datetime for filtering
+    df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
+    df = df[(df["date"] >= date1) & (df["date"] <= date2)]
 
-# Convert back to formatted string for display
-df['date'] = df['date'].dt.strftime('%d/%m/%Y')
-
-# Reset index before displaying the table
-# df_filtered = df.reset_index(drop=False)
-# df = df_filtered[df_filtered['poste']=="p1"]
-# Display the table without index
-st.table(df)
+    # Convert back to formatted string for display
+    df['date'] = df['date'].dt.strftime('%d/%m/%Y')
 
 
-
-param = st.sidebar.selectbox(f'ordonnée', df.columns[2:]) 
-st.markdown(f"<h2 style='text-align: center;'>{param}: {np.around(df[param].mean(),2)}</h2>", unsafe_allow_html=True)        
-fig = px.line(df,x="date",y=param,color='poste')
-st.plotly_chart(fig,use_container_width=True,height = 200)
-
+    param = st.selectbox(f'Paramètre', df.columns[2:]) 
+    visualise(df,param,don)
+elif traitement == "Consomation de produis chimiques":
+    df = pd.read_excel('Consommation spécifique.xlsx',sheet_name='PC')
+    param = st.selectbox(f'Paramètre', df.columns[1:]) 
+    
+    consomation(df,param)
+elif traitement == "Consomation denergie":
+    df = pd.read_excel('Consommation spécifique.xlsx',sheet_name='Energie')
+    param = st.selectbox(f'Paramètre', df.columns[1:]) 
+  
+    consomation_energie(df,param)
+else: 
+    df = pd.read_excel('Anomalies et actions WAVE 2 EAST Non réalisée.xlsx')
+    print(df['Emplacement'].unique)
+    anomali(df)
