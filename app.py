@@ -7,7 +7,7 @@ import plotly.express as px
 import json
 from datetime import datetime
 import numpy as np
-from fonctions import visualise, consomation,consomation_energie,anomali
+from fonctions import visualise, consomation,consomation_energie,anomali,load_data
 
 
 def image_to_base64(image_path):
@@ -98,6 +98,9 @@ elif traitement == "Consomation denergie":
   
     consomation_energie(df,param)
 else: 
-    df = pd.read_excel('Anomalies et actions WAVE 2 EAST Non réalisée.xlsx')
-    print(df['Emplacement'].unique)
-    anomali(df)
+    data_file = 'Anomalies et actions WAVE 2 EAST Non réalisée.xlsx'
+    df = load_data(data_file)
+  
+    anomali(df,data_file)
+    # Téléchargement du fichier modifié
+
