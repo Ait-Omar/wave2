@@ -11,42 +11,20 @@ from openpyxl.drawing.image import Image as XLImage
 import matplotlib.pyplot as plt
 import ezdxf
 import json
+import plotly.graph_objects as go
 
 
 
 
 def visualise(df,param,on):
-    # if on == "UF":
-    df.replace('F', np.nan, inplace=True)
-    df.replace('BW', np.nan, inplace=True)
-    df.replace('f', np.nan, inplace=True)
-    df.replace('W.BW', np.nan, inplace=True)
-    df.replace('w-bw	', np.nan, inplace=True)
-    df.replace('W.F	', np.nan, inplace=True)
-    df.replace('W-F', np.nan, inplace=True)
-    df.replace('wb', np.nan, inplace=True)
-    df.replace('SOAK CEB1	', np.nan, inplace=True)
-    df.replace('w-f	', np.nan, inplace=True)
-    df.replace('HS	', np.nan, inplace=True)
-    df.replace('SOAK CEB1	', np.nan, inplace=True)
-    df.replace('W-BW	', np.nan, inplace=True)
-    df.replace('bw	', np.nan, inplace=True)
-    df.replace('W.F	', np.nan, inplace=True)
-    df.replace('bw	', np.nan, inplace=True)
-    df.replace('w-bw	', np.nan, inplace=True)
-    df.replace('WB', np.nan, inplace=True)
-    df.replace('bw', np.nan, inplace=True)
-    df.replace('hs', np.nan, inplace=True)
-    df.replace('soakceb2', np.nan, inplace=True)
-    df.replace('WBW', np.nan, inplace=True)
-    df.replace('***', np.nan, inplace=True)
-    df.replace('HS', np.nan, inplace=True)
-    df.replace('w-bw', np.nan, inplace=True)
-    df['combined'] = df['date'].astype(str) + " " + df['poste'].astype(str)
+    df.replace(['F', 'BW', 'f', 'W.BW', 'w-bw', 'W.F', 'W-F', 'wb', 'SOAK CEB1',
+                'w-f', 'HS', 'W-BW', 'bw', 'WB', 'hs', 'soakceb2', 'WBW', '***'], 
+               np.nan, inplace=True)
+    df['Date'] = df['date'].astype(str) + " " + df['poste'].astype(str)
     # df['label_short'] = range(1, len(df) + 1)  # Utiliser des indices numériques pour l'axe X
     # st.table(df)
     st.markdown(f"<h2 style='text-align: center;'>{param} moyen: {np.around(df[param].mean(),2)}</h2>", unsafe_allow_html=True)        
-    fig = px.line(df,x="combined",y=param)
+    fig = px.line(df,x="Date",y=param)
     # fig.update_xaxes(
     # tickvals=df['combined'],  # Points de la colonne combinée
     # ticktext=df['label_short'])  # Étiquettes abrégées (indices ou autre)
@@ -58,9 +36,36 @@ def consomation(df,param):
     st.plotly_chart(fig,use_container_width=True,height = 200)
 
 def   consomation_energie(df,param):
-    st.markdown(f"<h2 style='text-align: center;'>{param}: {np.around(df[param].mean(),2)}</h2>", unsafe_allow_html=True)        
+
+    st.markdown(f"<h2 style='text-align: center;'>{param}</h2>", unsafe_allow_html=True)        
     fig = px.line(df,x="Date",y=param)
     st.plotly_chart(fig,use_container_width=True,height = 200)
+
+
+        # Distribution des paramètres
+    param_to_analyze = st.selectbox("Sélectionnez un paramètre pour analyser sa distribution", df.columns[1:])
+    fig_hist = px.histogram(df, x=param_to_analyze, title=f"Distribution de {param_to_analyze}", nbins=20)
+    st.plotly_chart(fig_hist, use_container_width=True)
+    if param:
+        stats = df[param].describe()
+
+        # Créer un DataFrame propre pour les statistiques descriptives
+        stats_clean = pd.DataFrame({
+            "Statistique": ["Moyenne", "Médiane", "Min", "Max", "Écart-type", "1er Quartile", "3e Quartile"],
+            "Valeur": [
+                round(stats["mean"], 2),
+                round(stats["50%"], 2),
+                round(stats["min"], 2),
+                round(stats["max"], 2),
+                round(stats["std"], 2),
+                round(stats["25%"], 2),
+                round(stats["75%"], 2),
+            ]
+        })
+
+        # Afficher un tableau propre
+        st.write(f"**Statistiques descriptives pour {param}**")
+        st.table(stats_clean)
 
 def load_data(file_path):
     # Charger les données Excel
@@ -102,6 +107,7 @@ def save_data_with_image(file_path, data, image_paths):
             sheet.add_image(img, f"K{idx}")  # Ajouter l'image dans la colonne K
 
     workbook.save(file_path)
+
 def anomali(data,data_file):
 
     st.title("Suivi des Anomalies Journalières")

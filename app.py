@@ -1,106 +1,159 @@
 import streamlit as st
 import pandas as pd
-from PIL import Image
-import base64
-from io import BytesIO
 import plotly.express as px
-import json
 from datetime import datetime
-import numpy as np
-from fonctions import visualise, consomation,consomation_energie,anomali,load_data
 
+def load_data(file):
+    try:
+        data = pd.read_excel(file)
+        return data
+    except Exception as e:
+        st.error(f"Erreur lors du chargement du fichier : {e}")
+        return None
 
-def image_to_base64(image_path):
-    img = Image.open(image_path)
-    buffer = BytesIO()
-    img.save(buffer, format="PNG")
-    img_str = base64.b64encode(buffer.getvalue()).decode()
-    return img_str
+def preprocess_data(non_realisee, realisee):
+    non_realisee = non_realisee.rename(columns=non_realisee.iloc[0]).drop(non_realisee.index[0])
+    realisee = realisee.rename(columns=realisee.iloc[0]).drop(realisee.index[0])
 
-logo_path1 = "static/logo.png"  
-logo_base641 = image_to_base64(logo_path1)
+    anomalies_non_realisees = non_realisee[['Anomalies', 'Emplacement', 'Type', 'Responsable', 'Date']].dropna()
+    anomalies_realisees = realisee[['Anomalies', 'Emplacement', 'Type', 'Responsable', 'Date']].dropna()
 
+    return anomalies_non_realisees, anomalies_realisees
 
-st.sidebar.markdown(
-    f"""
-    <div style="text-align: center; padding-bottom: 5px;padding-top: 5px;">
-        <img src="data:image/png;base64,{logo_base641}" alt="Logo" width="250">
-    </div>
-    """, 
-    unsafe_allow_html=True
-)
+def calculate_statistics(non_realisee, realisee):
+    stats = {
+        "Total Non Réalisées": len(non_realisee),
+        "Total Réalisées": len(realisee),
+        "Taux de Réalisation": (len(realisee) / len(non_realisee) * 100) if len(non_realisee) > 0 else 0
+    }
+    return stats
 
+def visualize_statistics(stats):
+    st.subheader("Statistiques des Anomalies")
 
-st.markdown(f"<h1 style='text-align: center'>Wave 2</h1>", unsafe_allow_html=True)
+    # Afficher les statistiques principales
+    for key, value in stats.items():
+        st.markdown(f"- **{key} :** {value}")
 
+    # Visualisation avec Plotly
+    fig = px.bar(
+        x=['Non réalisées', 'Réalisées'], 
+        y=[stats["Total Non Réalisées"], stats["Total Réalisées"]],
+        labels={'x': 'Catégorie', 'y': 'Nombre danomalies'},
+        title="Répartition des Anomalies",
+        color=['Non réalisées', 'Réalisées']
+    )
+    st.plotly_chart(fig)
 
+def analyze_realisation_dates(realisee):
+    st.subheader("Analyse des Dates de Réalisation")
 
-traitement = st.sidebar.selectbox('Traitement:',[
-                                                'Visualisation des paramètres',
-                                                'Consomation de produis chimiques',
-                                                'Consomation denergie',
-                                                "Anomalies"])
-if traitement == 'Visualisation des paramètres':
-    # uploaded_file = st.sidebar.file_uploader("Charger les données laboratoires", type=["xlsx", "xls"])
+    # Conversion des dates
+    realisee['Date'] = pd.to_datetime(realisee['Date'], errors='coerce')
 
-    # #---------------------------------------------Chargement des données-----------------------------------------------------
-    # if uploaded_file is None:
-    #     st.sidebar.info("Upload a file through config")
-    #     st.stop()
-    st.sidebar.markdown("<p style='text-align: center;'>Fichier téléchargé avec succès!</p>",unsafe_allow_html=True)
-    sheets =["SELF CLEANING","UF","RO-A","RO-B","RO-C","RO-D","PRODUCTION"]
-    data = {}
-    for sheet in sheets:
-            data[sheet] = pd.read_excel('SUIVI DIPS (1).xlsx',sheet_name=sheet)
-    don = st.sidebar.radio('Phases de traitement:',
-                                    [
-                                        "SELF CLEANING",
-                                        "UF",
-                                        "RO-A",
-                                        "RO-B",
-                                        "RO-C",
-                                        "RO-D",
-                                        "PRODUCTION"
-                                        ])  
-    df = pd.read_excel('SUIVI DIPS (1).xlsx',sheet_name=don)
+    # Distribution des réalisations dans le temps
+    time_trend = realisee.groupby(realisee['Date'].dt.to_period('M')).size().reset_index(name='count')
+    time_trend['Date'] = time_trend['Date'].dt.to_timestamp()
 
-    df['date'] = pd.to_datetime(df['date'])
-    df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format to 'dd/mm/yyyy'
+    fig = px.line(
+        time_trend, 
+        x='Date', 
+        y='count', 
+        title="Tendance des Réalisations dans le Temps",
+        labels={'count': 'Nombre danomalies réalisées', 'Date': 'Mois'}
+    )
+    st.plotly_chart(fig)
 
-    # Start and end dates for filtering (convert back to datetime)
-    startDate = pd.to_datetime(df["date"], format='%d/%m/%Y').min()
-    endDate = pd.to_datetime(df["date"], format='%d/%m/%Y').max()
+def analyze_types(non_realisee, realisee):
+    st.subheader("Analyse des Types d'Anomalies")
 
-    col1, col2 = st.columns((2))
-    with col1:
-        date1 = pd.to_datetime(st.date_input("Start Date", startDate))
-    with col2:
-        date2 = pd.to_datetime(st.date_input("End Date", endDate))
+    # Répartition par type avec Plotly
+    type_counts_non_realisee = non_realisee['Type'].value_counts().reset_index()
+    type_counts_non_realisee.columns = ['Type', 'Non réalisées']
 
-    # Convert back to datetime for filtering
-    df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
-    df = df[(df["date"] >= date1) & (df["date"] <= date2)]
+    type_counts_realisee = realisee['Type'].value_counts().reset_index()
+    type_counts_realisee.columns = ['Type', 'Réalisées']
 
-    # Convert back to formatted string for display
-    df['date'] = df['date'].dt.strftime('%d/%m/%Y')
+    merged_counts = pd.merge(type_counts_non_realisee, type_counts_realisee, on='Type', how='outer').fillna(0)
 
+    fig = px.bar(
+        merged_counts.melt(id_vars='Type', value_vars=['Non réalisées', 'Réalisées']), 
+        x='Type', 
+        y='value', 
+        color='variable',
+        title="Répartition des Types d'Anomalies",
+        labels={'value': 'Nombre danomalies', 'variable': 'Catégorie'}
+    )
+    st.plotly_chart(fig)
 
-    param = st.selectbox(f'Paramètre', df.columns[2:]) 
-    visualise(df,param,don)
-elif traitement == "Consomation de produis chimiques":
-    df = pd.read_excel('Consommation spécifique.xlsx',sheet_name='PC')
-    param = st.selectbox(f'Paramètre', df.columns[1:]) 
-    
-    consomation(df,param)
-elif traitement == "Consomation denergie":
-    df = pd.read_excel('Consommation spécifique.xlsx',sheet_name='Energie')
-    param = st.selectbox(f'Paramètre', df.columns[1:]) 
-  
-    consomation_energie(df,param)
-else: 
-    data_file = 'Anomalies et actions WAVE 2 EAST Non réalisée.xlsx'
-    df = load_data(data_file)
-  
-    anomali(df,data_file)
-    # Téléchargement du fichier modifié
+def analyze_emplacement(non_realisee, realisee):
+    st.subheader("Répartition par Emplacement")
 
+    # Répartition par emplacement avec Plotly
+    emplacement_counts_non_realisee = non_realisee['Emplacement'].value_counts().reset_index()
+    emplacement_counts_non_realisee.columns = ['Emplacement', 'Non réalisées']
+
+    emplacement_counts_realisee = realisee['Emplacement'].value_counts().reset_index()
+    emplacement_counts_realisee.columns = ['Emplacement', 'Réalisées']
+
+    merged_emplacements = pd.merge(emplacement_counts_non_realisee, emplacement_counts_realisee, on='Emplacement', how='outer').fillna(0)
+
+    fig = px.bar(
+        merged_emplacements.melt(id_vars='Emplacement', value_vars=['Non réalisées', 'Réalisées']), 
+        x='Emplacement', 
+        y='value', 
+        color='variable',
+        title="Répartition des Anomalies par Emplacement",
+        labels={'value': 'Nombre danomalies', 'variable': 'Catégorie'}
+    )
+    st.plotly_chart(fig)
+
+def main():
+    st.set_page_config(page_title="Analyse des Anomalies", layout="wide")
+
+    st.title("Analyse Complète des Anomalies")
+
+    st.markdown(
+        """Cette application offre une analyse approfondie des anomalies non réalisées et réalisées. 
+        Elle fournit des statistiques, des tendances et des insights pour aider l'équipe industrielle à prioriser les actions."""
+    )
+
+    # Chargement des fichiers
+    uploaded_non_realisee = st.file_uploader("Uploader le fichier des anomalies non réalisées", type=['xlsx'])
+    uploaded_realisee = st.file_uploader("Uploader le fichier des anomalies réalisées", type=['xlsx'])
+
+    if uploaded_non_realisee and uploaded_realisee:
+        non_realisee = load_data(uploaded_non_realisee)
+        realisee = load_data(uploaded_realisee)
+
+        if non_realisee is not None and realisee is not None:
+            anomalies_non_realisees, anomalies_realisees = preprocess_data(non_realisee, realisee)
+
+            # Calculer les statistiques
+            stats = calculate_statistics(anomalies_non_realisees, anomalies_realisees)
+
+            # Afficher les tableaux
+            st.subheader("Tableaux des Anomalies")
+            st.markdown("### Anomalies Non Réalisées")
+            st.dataframe(anomalies_non_realisees)
+
+            st.markdown("### Anomalies Réalisées")
+            st.dataframe(anomalies_realisees)
+
+            # Visualiser les statistiques
+            visualize_statistics(stats)
+
+            # Analyse des types
+            analyze_types(anomalies_non_realisees, anomalies_realisees)
+
+            # Analyse des emplacements
+            analyze_emplacement(anomalies_non_realisees, anomalies_realisees)
+
+            # Tendance dans le temps
+            analyze_realisation_dates(anomalies_realisees)
+
+    st.markdown("---")
+    st.markdown("**Streamlit Application** - Analyse des anomalies pour l'équipe industrielle.")
+
+if __name__ == "__main__":
+    main()
