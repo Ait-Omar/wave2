@@ -16,19 +16,72 @@ import plotly.graph_objects as go
 
 
 
-def visualise(df,param,on):
-    df.replace(['F', 'BW', 'f', 'W.BW', 'w-bw', 'W.F', 'W-F', 'wb', 'SOAK CEB1',
-                'w-f', 'HS', 'W-BW', 'bw', 'WB', 'hs', 'soakceb2', 'WBW', '***'], 
+def visualise(df,param):
+    
+    df.replace(['wbw','soak ceb1','w-f','f','F','w-bw','WBW','W.BW','W,BW','ceb1','CEB2','bw','wf','wb','W-F','W.F','hs','WF','wB','BW','w,b','W,F','W-BW','ceb2','SOAK CEB1','W,B','CEB1','SOAK CEB2','HS',
+                ], 
                np.nan, inplace=True)
     df['Date'] = df['date'].astype(str) + " " + df['poste'].astype(str)
-    # df['label_short'] = range(1, len(df) + 1)  # Utiliser des indices numériques pour l'axe X
-    # st.table(df)
-    st.markdown(f"<h2 style='text-align: center;'>{param} moyen: {np.around(df[param].mean(),2)}</h2>", unsafe_allow_html=True)        
-    fig = px.line(df,x="Date",y=param)
-    # fig.update_xaxes(
-    # tickvals=df['combined'],  # Points de la colonne combinée
-    # ticktext=df['label_short'])  # Étiquettes abrégées (indices ou autre)
-    st.plotly_chart(fig,use_container_width=True,height = 200)
+
+
+    # Conteneur professionnel avec largeur personnalisée
+    st.markdown(
+        f"""
+        <div style="
+            background-color: #F9F9F9; 
+            border: 1px solid #D1D1D1; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 0 auto 20px auto; 
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+            width: 60%; /* Ajustez ce pourcentage selon vos besoins */
+            max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+        ">
+            <h2 style="
+                text-align: center; 
+                color: #4A90E2; 
+                font-family: Arial, sans-serif; 
+                margin-bottom: 0;
+            ">
+                {param.capitalize()} Moyen: {np.around(df[param].mean(), 2)} 
+            </h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+
+
+    # Personnalisation du graphique avec un style moderne
+    fig = px.line(
+        df,
+        x="Date",
+        y=param,
+        title=f"Évolution de {param.capitalize()} au fil du temps",
+        labels={
+            "Date": "Date",
+            param: param.capitalize()
+        },
+        template="plotly_white",  # Thème moderne
+    )
+
+    # Options pour améliorer le design
+    fig.update_traces(line=dict(width=3))  # Épaisseur des lignes
+    fig.update_layout(
+        title=dict(
+            text=f"Évolution de {param.capitalize()}",
+            font=dict(size=20),
+            x=0.5,
+            xanchor="center"
+        ),
+        xaxis=dict(title_text="Date", tickangle=-45),
+        yaxis=dict(title_text=f"{param.capitalize()}"),
+        margin=dict(l=50, r=50, t=60, b=40),
+        height=400,
+    )
+
+    # Affichage du graphique
+    st.plotly_chart(fig, use_container_width=True)
 
 def consomation(df,param):
     st.markdown(f"<h2 style='text-align: center;'>{param[:-5]} moyen: {np.around(df[param].mean(),2)}</h2>", unsafe_allow_html=True)        

@@ -17,12 +17,24 @@ st.set_page_config(
 )
 
 st.title("📊 Exploration des Données des Phases")
-st.write(
+st.markdown(
     """
-    Explorez les données de performance des différentes phases de traitement de la station de dessalement Wave 2.
-    Sélectionnez une phase, définissez une période et visualisez les paramètres clés.
-    """
+    <div style="
+        text-align: justify; 
+        color: #333333; 
+        font-family: Arial, sans-serif; 
+        line-height: 1.6; 
+        border-left: 4px solid #4A90E2; 
+        padding-left: 10px;
+        margin-bottom: 20px;
+    ">
+        <strong>Explorez les données de performance</strong> des différentes phases de traitement de la station de dessalement <strong>Wave 2</strong>. 
+        Sélectionnez une phase, définissez une période et visualisez les paramètres clés pour mieux comprendre et analyser le processus.
+    </div>
+    """,
+    unsafe_allow_html=True
 )
+
 # Chargement des données
 sheets = ["SELF CLEANING", "UF", "RO-A", "RO-B", "RO-C", "RO-D", "PRODUCTION"]
 data = {}
@@ -54,57 +66,68 @@ df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
 df = df[(df["date"] >= date1) & (df["date"] <= date2)]
 df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
 
+st.sidebar.markdown(
+    """
+    <h3 style="
+        color: #4A90E2; 
+        font-family: Arial, sans-serif; 
+        margin-bottom: 15px;
+    ">
+        Sélectionnez un paramètre
+    </h3>
+    """,
+    unsafe_allow_html=True
+)
+
 # Sélection du paramètre à visualiser
-st.sidebar.subheader("Sélectionnez un paramètre")
-param = st.sidebar.selectbox(f'Paramètre', df.columns[2:])
+param = st.sidebar.selectbox(
+    'Paramètre', 
+    df.columns[2:],
+    help="Choisissez un paramètre à afficher parmi les colonnes disponibles."
+)
 
-# Titre de la phase
-st.subheader(f"Phase de traitement : {don}")
-st.write(f"### Période : {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}")
+# Style pour le titre de la phase
+st.markdown(
+    f"""
+    <h2 style="
+        text-align: center; 
+        color: #4A90E2; 
+        font-family: Arial, sans-serif; 
+        margin-bottom: 10px;
+    ">
+        Phase de traitement : {don}
+    </h2>
+    """,
+    unsafe_allow_html=True
+)
 
-# Affichage des données filtrées
-st.write("### Données Filtrées")
-st.dataframe(df)
+# Période formatée avec un style professionnel
+st.markdown(
+    f"""
+    <h4 style="
+        text-align: center; 
+        color: #333333; 
+        font-family: Arial, sans-serif; 
+        margin-top: 5px;
+    ">
+        Période : {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}
+    </h4>
+    """,
+    unsafe_allow_html=True
+)
 
-# Appel de la fonction de visualisation
-st.write(f"### Visualisation de {param}")
-visualise(df, param, don)
-# sheets =["SELF CLEANING","UF","RO-A","RO-B","RO-C","RO-D","PRODUCTION"]
-# data = {}
-# for sheet in sheets:
-#         data[sheet] = pd.read_excel('SUIVI DIPS (1).xlsx',sheet_name=sheet)
-# don = st.sidebar.radio('Phases de traitement:',
-#                                 [
-#                                     "SELF CLEANING",
-#                                     "UF",
-#                                     "RO-A",
-#                                     "RO-B",
-#                                     "RO-C",
-#                                     "RO-D",
-#                                     "PRODUCTION"
-#                                     ])  
-# df = pd.read_excel('SUIVI DIPS (1).xlsx',sheet_name=don)
+st.markdown(
+    f"""
+    <h3 style="
+        text-align: center; 
+        color: #4A90E2; 
+        font-family: Arial, sans-serif; 
+        margin-bottom: 20px;
+    ">
+        Visualisation de {param.capitalize()}
+    </h3>
+    """,
+    unsafe_allow_html=True
+)
 
-# df['date'] = pd.to_datetime(df['date'])
-# df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format to 'dd/mm/yyyy'
-
-# # Start and end dates for filtering (convert back to datetime)
-# startDate = pd.to_datetime(df["date"], format='%d/%m/%Y').min()
-# endDate = pd.to_datetime(df["date"], format='%d/%m/%Y').max()
-
-# col1, col2 = st.columns((2))
-# with col1:
-#     date1 = pd.to_datetime(st.date_input("Start Date", startDate))
-# with col2:
-#     date2 = pd.to_datetime(st.date_input("End Date", endDate))
-
-# # Convert back to datetime for filtering
-# df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
-# df = df[(df["date"] >= date1) & (df["date"] <= date2)]
-
-# # Convert back to formatted string for display
-# df['date'] = df['date'].dt.strftime('%d/%m/%Y')
-
-
-# param = st.selectbox(f'Paramètre', df.columns[2:]) 
-# visualise(df,param,don)
+visualise(df, param)

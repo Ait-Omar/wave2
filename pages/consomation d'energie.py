@@ -1,30 +1,3 @@
-# import streamlit as st
-# import pandas as pd
-# from PIL import Image
-# import base64
-# from io import BytesIO
-# import plotly.express as px
-# import json
-# from datetime import datetime
-# import numpy as np
-# from fonctions import visualise, consomation,consomation_energie,anomali,load_data
-
-# df = pd.read_excel('Consommation spécifique.xlsx',sheet_name='Energie')
-# # Ajouter des KPI
-# col1, col2, col3 = st.columns(3)
-
-# with col1:
-#     st.metric("Consommation Moyenne (kWh)", f"{np.around(df['Consommation KWh'].mean(), 2)}")
-
-# with col2:
-#     st.metric("Production Moyenne (kWh)", f"{np.around(df['Prod'].mean(), 2)}")
-
-# with col3:
-#     st.metric("Énergie Spécifique Moyenne", f"{np.around(df['Energie spécifique'].mean(), 2)}")
-
-# param = st.selectbox(f'Paramètre', df.columns[1:]) 
-
-# consomation_energie(df,param)
 import streamlit as st
 import pandas as pd
 from PIL import Image
@@ -40,7 +13,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# CSS pour améliorer le design et ajouter des animations
 st.markdown(
     """
     <style>
@@ -83,63 +55,129 @@ st.markdown(
 # Charger les données
 df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='Energie')
 
+df['date'] = pd.to_datetime(df['date'])
+df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format 'dd/mm/yyyy'
+
+# Définir les dates de début et de fin
+startDate = pd.to_datetime(df["date"], format='%d/%m/%Y').min()
+endDate = pd.to_datetime(df["date"], format='%d/%m/%Y').max()
+
+# Sélection des dates dans la barre latérale
+st.sidebar.subheader("Filtrer par période")
+date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
+date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
+
+# Filtrer les données par plage de dates
+df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
+df = df[(df["date"] >= date1) & (df["date"] <= date2)]
+df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
+
 # Titre principal
 st.markdown("<h2 style='text-align: center;'>Analyse Énergie</h2>", unsafe_allow_html=True)
 
-# Section des KPI
-st.markdown("<h3 style='text-align: center;'>Indicateurs Clés</h3>", unsafe_allow_html=True)
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.markdown(
-        f"""
-        <div class="kpi-box">
-            <h3>Consommation Moyenne (kWh)</h3>
-            <p>{np.around(df['Consommation KWh'].mean(), 2)}</p>
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
-
-with col2:
-    st.markdown(
-        f"""
-        <div class="kpi-box">
-            <h3>Production Moyenne (kWh)</h3>
-            <p>{np.around(df['Prod'].mean(), 2)}</p>
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
-
-with col3:
-    st.markdown(
-        f"""
-        <div class="kpi-box">
-            <h3>Énergie Spécifique Moyenne</h3>
-            <p>{np.around(df['Energie spécifique'].mean(), 2)}</p>
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
 
 # Sélection du paramètre pour l'analyse
-param = st.selectbox(f"Paramètre à visualiser", df.columns[1:])
+param = st.sidebar.selectbox(f"Paramètre à visualiser", df.columns[1:])
 
 # Visualisation des données
 def consomation_energie(df, param):
-    st.markdown(f"<h2 style='text-align: center;'>Visualisation : {param}</h2>", unsafe_allow_html=True)
-    
+    # Indicateurs clés en haut
+    st.markdown(
+        f"<h3 style='text-align: center; color: #4A90E2;'> {param.capitalize()}</h3>",
+        unsafe_allow_html=True
+    )
+
+
+
+    # Style CSS pour les boîtes KPI
+    st.markdown(
+        """
+        <style>
+        .kpi-box {
+           background-color: #F9F9F9; 
+        border: 1px solid #D1D1D1; 
+        border-radius: 8px; 
+        padding: 20px; 
+        margin: 0 auto 20px auto; 
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+        width: 60%; /* Ajustez ce pourcentage selon vos besoins */
+        max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+        }
+   
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Colonne 1 : Moyenne
+
+    st.markdown(
+        f"""
+        <div class="kpi-box">
+            <h2 style="
+            text-align: center; 
+            color: #4A90E2; 
+            font-family: Arial, sans-serif; 
+            margin-bottom: 0;">
+            Consommation Journaliée : {np.around(df[param].iloc[-1],3)}
+            </h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+
     # Graphique de la tendance
-    fig = px.line(df, x="Date", y=param, title=f"Tendance de {param}")
+    fig = px.line(
+        df, 
+        x="date", 
+        y=param, 
+        title=f"Tendance de {param.capitalize()} pendant  {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
+        labels={"date": "Date", param: param.capitalize()},
+        template="plotly_white"
+    )
+    fig.update_layout(
+        title=dict(
+            text=f"Évolution de {param.capitalize()} Pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
+            font=dict(size=20),  # Taille du titre
+            x=0.5,  # Centrer le titre
+            xanchor="center"
+        ),
+        font=dict(size=14),  # Taille de la police pour le reste du graphique
+        xaxis=dict(
+            title=dict(text="Date", font=dict(size=16)),  # Titre de l'axe X
+            tickangle=-45,  # Inclinaison des étiquettes de l'axe X pour une meilleure lisibilité
+            showgrid=True  # Afficher une grille verticale
+        ),
+        yaxis=dict(
+            title=dict(text="Valeur", font=dict(size=16)),  # Titre de l'axe Y
+            showgrid=True  # Afficher une grille horizontale
+        ),
+        margin=dict(l=40, r=40, t=60, b=40),  # Marges autour du graphique
+        height=500,  # Hauteur du graphique
+    )
     st.plotly_chart(fig, use_container_width=True)
-    
+
     # Analyse de la distribution
-    st.markdown("<h3>Distribution des paramètres</h3>", unsafe_allow_html=True)
-    param_to_analyze = st.selectbox("Sélectionnez un paramètre pour analyser sa distribution", df.columns[1:])
-    fig_hist = px.histogram(df, x=param_to_analyze, title=f"Distribution de {param_to_analyze}", nbins=20)
+    st.markdown(
+        "<h3 style='text-align: center; color: #4A90E2;'>Distribution des Paramètres</h3>", 
+        unsafe_allow_html=True
+    )
+
+    fig_hist = px.histogram(
+        df, 
+        x=param, 
+        title=f"Distribution de {param.capitalize()}",
+        labels={param: param.capitalize()},
+        nbins=20, 
+        template="plotly_white"
+    )
+    fig_hist.update_layout(
+        title_x=0.5,  # Centrer le titre du graphique
+        height=500,
+        margin=dict(l=40, r=40, t=60, b=40)
+    )
     st.plotly_chart(fig_hist, use_container_width=True)
-    
+
     # Statistiques descriptives
     if param:
         stats = df[param].describe()
@@ -158,14 +196,16 @@ def consomation_energie(df, param):
             ]
         })
 
-        # Afficher un tableau propre
-        st.write(f"**Statistiques descriptives pour {param}**")
+        # Affichage des statistiques descriptives
+        st.markdown(
+            f"<h3 style='text-align: center; color: #4A90E2;'>Statistiques Descriptives pour {param.capitalize()}</h3>",
+            unsafe_allow_html=True
+        )
         st.table(stats_clean)
 
-# Appel de la fonction
+
 consomation_energie(df, param)
 
-# Footer
 st.markdown(
     """
     <div class="footer">

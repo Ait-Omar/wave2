@@ -1,19 +1,4 @@
-# import streamlit as st
-# import pandas as pd
-# from PIL import Image
-# import base64
-# from io import BytesIO
-# import plotly.express as px
-# import json
-# from datetime import datetime
-# import numpy as np
-# from fonctions import visualise, consomation,consomation_energie,anomali,load_data
 
-# data_file = 'Anomalies et actions WAVE 2 EAST Non réalisée.xlsx'
-# df = load_data(data_file)
-
-# anomali(df,data_file)
-# # Téléchargement du fichier modifié
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -72,7 +57,7 @@ def load_data(file_path):
     return pd.read_excel(file_path)
 
 # Charger les données
-data_file = 'Anomalies et actions WAVE 2 EAST Non réalisée.xlsx'
+data_file = 'Réalisée (2).xlsx'
 data = load_data(data_file)
 
 # Options de filtrage
@@ -135,17 +120,8 @@ if not filtered_data.empty:
 else:
     st.info("Aucune donnée disponible pour les filtres actuels.")
 
-# Tendance des anomalies dans le temps
-st.subheader("Tendance des Anomalies dans le Temps")
-if 'Date' in filtered_data.columns:
-    filtered_data['Date'] = pd.to_datetime(filtered_data['Date'])
-    trend_data = filtered_data.groupby('Date').size()
-    st.line_chart(trend_data)
-else:
-    st.info("Aucune donnée de date disponible.")
-
 # Ajouter une nouvelle anomalie
-st.subheader("Ajouter une Nouvelle Anomalie")
+st.subheader("Ajouter une Nouvelle Anomalie Réaliseé")
 with st.form("nouvelle_anomalie"):
     anomalie = st.text_input("Anomalie")
     emplacement = st.text_input("Emplacement")

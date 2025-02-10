@@ -1,18 +1,4 @@
-# import streamlit as st
-# import pandas as pd
-# from PIL import Image
-# import base64
-# from io import BytesIO
-# import plotly.express as px
-# import json
-# from datetime import datetime
-# import numpy as np
-# from fonctions import visualise, consomation,consomation_energie,anomali,load_data
 
-# df = pd.read_excel('Consommation spécifique.xlsx',sheet_name='PC')
-# param = st.selectbox(f'Paramètre', df.columns[1:]) 
-    
-# consomation(df,param)
 import streamlit as st
 import pandas as pd
 from PIL import Image
@@ -83,36 +69,117 @@ st.markdown(
 )
 
 # Charger les données
-df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='PC')
+df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='consomation des produits ')
+print(df.columns)
+# Préparation des données
+df['date'] = pd.to_datetime(df['date'])
+df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format 'dd/mm/yyyy'
+
+# Définir les dates de début et de fin
+startDate = pd.to_datetime(df["date"], format='%d/%m/%Y').min()
+endDate = pd.to_datetime(df["date"], format='%d/%m/%Y').max()
+
+# Sélection des dates dans la barre latérale
+st.sidebar.subheader("Filtrer par période")
+date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
+date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
+
+# Filtrer les données par plage de dates
+df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
+df = df[(df["date"] >= date1) & (df["date"] <= date2)]
+df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
 
 # Sélection du paramètre
-st.markdown("<h2 style='text-align: center;'>Sélectionnez un paramètre :</h2>", unsafe_allow_html=True)
-param = st.selectbox(f'Paramètre', df.columns[1:])
+st.sidebar.markdown("<h2 style='text-align: center;'>Sélectionnez un paramètre :</h2>", unsafe_allow_html=True)
+param = st.sidebar.selectbox(f'Paramètre', df.columns[1:])
 
 # Fonction de consommation
 def consomation(df, param):
-    # Calcul de la moyenne
-    moyenne = np.around(df[param].mean(), 2)
+    
+    # Titre des indicateurs
     st.markdown(
-        f"<h2 style='text-align: center;'>{param[:-5]} moyen : {moyenne}</h2>", 
+        f"<h3 style='text-align: center; color: #4A90E2;'>{param}</h3>", 
         unsafe_allow_html=True
     )
 
-    # Graphique interactif avec Plotly
+
+    # Style CSS intégré pour les boîtes KPI
+    st.markdown(
+        """
+        <style>
+        .kpi-box {
+           background-color: #F9F9F9; 
+        border: 1px solid #D1D1D1; 
+        border-radius: 8px; 
+        padding: 20px; 
+        margin: 0 auto 20px auto; 
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+        width: 60%; /* Ajustez ce pourcentage selon vos besoins */
+        max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+        }
+        </style>
+        """, 
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        f"""
+        <div class="kpi-box">
+            <h2 style="
+            text-align: center; 
+            color: #4A90E2; 
+            font-family: Arial, sans-serif; 
+            margin-bottom: 0;">
+            Consommation Journaliée : {np.around(df[param].iloc[-1],3)}
+            </h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+
+
+
+
     fig = px.line(
         df,
         x="date",
         y=param,
-        title=f"Évolution de {param} au cours du temps",
-        labels={"date": "Date", param: "Consommation"},
+        title=f"Évolution de {param.capitalize()} pendant  {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
+        labels={"date": "Date", param: param.capitalize()},
         template="plotly_white"
     )
+
+    # Mise en forme avancée du graphique
     fig.update_layout(
-        title_x=0.5,  # Centrer le titre
-        font=dict(size=14),
-        xaxis=dict(title="Date"),
-        yaxis=dict(title="Valeur"),
+        title=dict(
+            text=f"Évolution de {param.capitalize()} Pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
+            font=dict(size=20),  # Taille du titre
+            x=0.5,  # Centrer le titre
+            xanchor="center"
+        ),
+        font=dict(size=14),  # Taille de la police pour le reste du graphique
+        xaxis=dict(
+            title=dict(text="Date", font=dict(size=16)),  # Titre de l'axe X
+            tickangle=-45,  # Inclinaison des étiquettes de l'axe X pour une meilleure lisibilité
+            showgrid=True  # Afficher une grille verticale
+        ),
+        yaxis=dict(
+            title=dict(text="Valeur", font=dict(size=16)),  # Titre de l'axe Y
+            showgrid=True  # Afficher une grille horizontale
+        ),
+        margin=dict(l=40, r=40, t=60, b=40),  # Marges autour du graphique
+        height=500,  # Hauteur du graphique
     )
+
+    # Tracé plus épais pour la ligne
+    fig.update_traces(
+        line=dict(width=3),  # Épaisseur de la ligne
+        marker=dict(size=6)  # Taille des marqueurs (s'il y en a)
+    )
+
+    # Affichage du graphique dans Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
 # Appel de la fonction avec le paramètre sélectionné
