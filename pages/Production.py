@@ -84,43 +84,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# st.markdown(
-#     f"""
-#     <h4 style="
-#         text-align: center; 
-#         color: #333333; 
-#         font-family: Arial, sans-serif; 
-#         margin-top: 5px;
-#     ">
-#         Période: {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}
-#     </h4>
-#     """,
-#     unsafe_allow_html=True
-# )
-
-# st.markdown(
-#     f"""
-#     <h3 style="
-#         text-align: center; 
-#         color: #4A90E2; 
-#         font-family: Arial, sans-serif; 
-#         margin-bottom: 20px;
-#     ">
-#         Visualisation des performances du train {train}
-#     </h3>
-#     """,
-#     unsafe_allow_html=True
-# )
-
-# Affichage du graphique avec la fonction visualise
 df.replace(['wbw','soak ceb1','w-f','f','F','w-bw','WBW','W.BW','W,BW','ceb1','CEB2','bw','wf','wb','W-F','W.F','hs','WF','wB','BW','w,b','W,F','W-BW','ceb2','SOAK CEB1','W,B','CEB1','SOAK CEB2','HS',
                 ], 
                np.nan, inplace=True)
-# df['Date'] = df['date'].astype(str) + " " + df['poste'].astype(str)
-
-
-# Conteneur professionnel avec largeur personnalisée
-st.markdown(
+col1,col2,col3 = st.columns((3))
+with col1:
+    st.markdown(
     f"""
     <div style="
         background-color: #F9F9F9; 
@@ -129,7 +98,7 @@ st.markdown(
         padding: 20px; 
         margin: 0 auto 20px auto; 
         box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
-        width: 60%; /* Ajustez ce pourcentage selon vos besoins */
+        width: 100%; /* Ajustez ce pourcentage selon vos besoins */
         max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
     ">
         <h2 style="
@@ -138,7 +107,57 @@ st.markdown(
             font-family: Arial, sans-serif; 
             margin-bottom: 0;
         ">
-            Production Journaliée : {df[param].iloc[-1]} 
+            Production Journaliére : {df[param].iloc[-1]} m³
+        </h2>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
+    with col2:
+        st.markdown(
+    f"""
+    <div style="
+        background-color: #F9F9F9; 
+        border: 1px solid #D1D1D1; 
+        border-radius: 8px; 
+        padding: 20px; 
+        margin: 0 auto 20px auto; 
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+        width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+        max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+    ">
+        <h2 style="
+            text-align: center; 
+            color: #4A90E2; 
+            font-family: Arial, sans-serif; 
+            margin-bottom: 0;
+        ">
+            Production Prévue : 15000 m³
+        </h2>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
+    with col3:
+        st.markdown(
+    f"""
+    <div style="
+        background-color: #F9F9F9; 
+        border: 1px solid #D1D1D1; 
+        border-radius: 8px; 
+        padding: 20px; 
+        margin: 0 auto 20px auto; 
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+        width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+        max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+    ">
+        <h2 style="
+            text-align: center; 
+            color: #4A90E2; 
+            font-family: Arial, sans-serif; 
+            margin-bottom: 0;
+        ">
+            Taux de production : {np.round(df[param].iloc[-1]/15000,4)*100} %
         </h2>
     </div>
     """, 
