@@ -157,7 +157,7 @@ with col1:
             font-family: Arial, sans-serif; 
             margin-bottom: 0;
         ">
-            Taux de production : {np.round(df[param].iloc[-1]/15000,4)*100} %
+            Taux de production : {np.round(df[param].iloc[-1]/15000*100,2)} %
         </h2>
     </div>
     """, 
