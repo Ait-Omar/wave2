@@ -107,7 +107,7 @@ with col1:
             font-family: Arial, sans-serif; 
             margin-bottom: 0;
         ">
-            Production Journaliére : {df[param].iloc[-1]} m³
+            Production journalière : {df[param].iloc[-1]} m³
         </h2>
     </div>
     """, 

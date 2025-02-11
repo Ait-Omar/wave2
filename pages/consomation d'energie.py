@@ -118,7 +118,7 @@ def consomation_energie(df, param):
             color: #4A90E2; 
             font-family: Arial, sans-serif; 
             margin-bottom: 0;">
-            Consommation Journaliée : {np.around(df[param].iloc[-1],3)}
+            Consommation journalière : {np.around(df[param].iloc[-1],3)}
             </h2>
         </div>
         """, 
