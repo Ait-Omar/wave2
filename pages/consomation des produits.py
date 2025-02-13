@@ -69,7 +69,7 @@ st.markdown(
 )
 
 # Charger les données
-df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='consomation des produits ')
+df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='Produits chimiques')
 print(df.columns)
 # Préparation des données
 df['date'] = pd.to_datetime(df['date'])

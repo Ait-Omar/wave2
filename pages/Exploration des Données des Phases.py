@@ -36,7 +36,7 @@ st.markdown(
 )
 
 # Chargement des données
-sheets = ["SELF CLEANING", "UF", "RO-A", "RO-B", "RO-C", "RO-D", "PRODUCTION"]
+sheets = ["SELF CLEANING", "UF", "RO-A", "RO-B", "RO-C", "RO-D"]
 data = {}
 for sheet in sheets:
     data[sheet] = pd.read_excel('SUIVI DIPS (1).xlsx', sheet_name=sheet)

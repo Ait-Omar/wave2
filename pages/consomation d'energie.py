@@ -54,7 +54,7 @@ st.markdown(
 
 # Charger les données
 df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='Energie')
-
+print(df.columns)
 df['date'] = pd.to_datetime(df['date'])
 df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format 'dd/mm/yyyy'
 
