@@ -43,7 +43,7 @@ def visualise(df,param):
                 font-family: Arial, sans-serif; 
                 margin-bottom: 0;
             ">
-                {param.capitalize()} Moyen: {np.around(df[param].mean(), 2)} 
+                {param.capitalize()} Journalièr: {np.around(df[param].iloc[-1], 2)} 
             </h2>
         </div>
         """, 
