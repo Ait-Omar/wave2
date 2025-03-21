@@ -98,7 +98,6 @@ st.markdown(
 )
 
 # Titre principal
-st.markdown(f"<h1 style='text-align: center;'>Station de Dessalement Wave 2 - Jorf Lasfar</h1>", unsafe_allow_html=True)
 
 # Logo avec animation
 st.markdown(
@@ -109,9 +108,10 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+st.markdown(f"<h1 style='text-align: center;'>Station de Dessalement Wave 2 - Jorf Lasfar</h1>", unsafe_allow_html=True)
 
 # Sous-titre
-st.markdown("<h2 style='text-align: center;'>Bienvenue sur l'interface dédiée à la station de dessalement Wave 2</h2>", unsafe_allow_html=True)
+# st.markdown("<h2 style='text-align: center;'>Bienvenue sur l'interface dédiée à la station de dessalement Wave 2</h2>", unsafe_allow_html=True)
 
 # Description
 st.markdown(
