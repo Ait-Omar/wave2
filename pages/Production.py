@@ -88,114 +88,229 @@ df.replace(['wbw','soak ceb1','w-f','f','F','w-bw','WBW','W.BW','W,BW','ceb1','C
                 ], 
                np.nan, inplace=True)
 col1,col2,col3 = st.columns((3))
-with col1:
-    st.markdown(
-    f"""
-    <div style="
-        background-color: #F9F9F9; 
-        border: 1px solid #D1D1D1; 
-        border-radius: 8px; 
-        padding: 20px; 
-        margin: 0 auto 20px auto; 
-        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
-        width: 100%; /* Ajustez ce pourcentage selon vos besoins */
-        max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
-    ">
-        <h2 style="
-            text-align: center; 
-            color: #4A90E2; 
-            font-family: Arial, sans-serif; 
-            margin-bottom: 0;
-        ">
-            Production journalière : {df[param].iloc[-1]} m³
-        </h2>
-    </div>
-    """, 
-    unsafe_allow_html=True
-)
-    with col2:
+if param != "total production ":
+    with col1:
         st.markdown(
-    f"""
-    <div style="
-        background-color: #F9F9F9; 
-        border: 1px solid #D1D1D1; 
-        border-radius: 8px; 
-        padding: 20px; 
-        margin: 0 auto 20px auto; 
-        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
-        width: 100%; /* Ajustez ce pourcentage selon vos besoins */
-        max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
-    ">
-        <h2 style="
-            text-align: center; 
-            color: #4A90E2; 
-            font-family: Arial, sans-serif; 
-            margin-bottom: 0;
+        f"""
+        <div style="
+            background-color: #F9F9F9; 
+            border: 1px solid #D1D1D1; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 0 auto 20px auto; 
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+            width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+            max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
         ">
-            Production Prévue : 15000 m³
-        </h2>
-    </div>
-    """, 
-    unsafe_allow_html=True
-)
-    with col3:
+            <h2 style="
+                text-align: center; 
+                color: #4A90E2; 
+                font-family: Arial, sans-serif; 
+                margin-bottom: 0;
+            ">
+                Production journalière : {df[param].iloc[-1]} m³
+            </h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+        with col2:
+            st.markdown(
+        f"""
+        <div style="
+            background-color: #F9F9F9; 
+            border: 1px solid #D1D1D1; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 0 auto 20px auto; 
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+            width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+            max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+        ">
+            <h2 style="
+                text-align: center; 
+                color: #4A90E2; 
+                font-family: Arial, sans-serif; 
+                margin-bottom: 0;
+            ">
+                Production Prévue : 15000 m³
+            </h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+        with col3:
+            st.markdown(
+        f"""
+        <div style="
+            background-color: #F9F9F9; 
+            border: 1px solid #D1D1D1; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 0 auto 20px auto; 
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+            width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+            max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+        ">
+            <h2 style="
+                text-align: center; 
+                color: #4A90E2; 
+                font-family: Arial, sans-serif; 
+                margin-bottom: 0;
+            ">
+                Taux de production : {np.round(df[param].iloc[-1]/15000*100,2)} %
+            </h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+    # Personnalisation du graphique avec un style moderne
+    fig = px.line(
+        df,
+        x="date",
+        y=param,
+        title=f"Évolution de {param.capitalize()} au fil du temps",
+        labels={
+            "dete": "date",
+            param: param.capitalize()
+        },
+        template="plotly_white",  # Thème moderne
+    )
+
+    # Options pour améliorer le design
+    fig.update_traces(line=dict(width=3))  # Épaisseur des lignes
+    fig.update_layout(
+        title=dict(
+            text=f"Évolution de la Production pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
+            font=dict(size=20),
+            x=0.5,
+            xanchor="center"
+        ),
+        xaxis=dict(
+            title_text="",
+            tickangle=-45,
+            showticklabels=False  # Hide the date labels on the x-axis
+        ),
+        yaxis=dict(title_text=f"{param.capitalize()}"),
+        margin=dict(l=50, r=50, t=60, b=40),
+        height=400,
+    )
+
+
+    # Affichage du graphique
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    with col1:
         st.markdown(
-    f"""
-    <div style="
-        background-color: #F9F9F9; 
-        border: 1px solid #D1D1D1; 
-        border-radius: 8px; 
-        padding: 20px; 
-        margin: 0 auto 20px auto; 
-        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
-        width: 100%; /* Ajustez ce pourcentage selon vos besoins */
-        max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
-    ">
-        <h2 style="
-            text-align: center; 
-            color: #4A90E2; 
-            font-family: Arial, sans-serif; 
-            margin-bottom: 0;
+        f"""
+        <div style="
+            background-color: #F9F9F9; 
+            border: 1px solid #D1D1D1; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 0 auto 20px auto; 
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+            width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+            max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
         ">
-            Taux de production : {np.round(df[param].iloc[-1]/15000*100,2)} %
-        </h2>
-    </div>
-    """, 
-    unsafe_allow_html=True
-)
+            <h2 style="
+                text-align: center; 
+                color: #4A90E2; 
+                font-family: Arial, sans-serif; 
+                margin-bottom: 0;
+            ">
+                Production journalière : {df[param].iloc[-1]} m³
+            </h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+        with col2:
+            st.markdown(
+        f"""
+        <div style="
+            background-color: #F9F9F9; 
+            border: 1px solid #D1D1D1; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 0 auto 20px auto; 
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+            width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+            max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+        ">
+            <h2 style="
+                text-align: center; 
+                color: #4A90E2; 
+                font-family: Arial, sans-serif; 
+                margin-bottom: 0;
+            ">
+                Production Prévue : 120000 m³
+            </h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+        with col3:
+            st.markdown(
+        f"""
+        <div style="
+            background-color: #F9F9F9; 
+            border: 1px solid #D1D1D1; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 0 auto 20px auto; 
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+            width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+            max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+        ">
+            <h2 style="
+                text-align: center; 
+                color: #4A90E2; 
+                font-family: Arial, sans-serif; 
+                margin-bottom: 0;
+            ">
+                Taux de production : {np.round(df[param].iloc[-1]/120000*100,2)} %
+            </h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
 
-# Personnalisation du graphique avec un style moderne
-fig = px.line(
-    df,
-    x="date",
-    y=param,
-    title=f"Évolution de {param.capitalize()} au fil du temps",
-    labels={
-        "dete": "date",
-        param: param.capitalize()
-    },
-    template="plotly_white",  # Thème moderne
-)
+    # Personnalisation du graphique avec un style moderne
+    fig = px.line(
+        df,
+        x="date",
+        y=param,
+        title=f"Évolution de {param.capitalize()} au fil du temps",
+        labels={
+            "dete": "date",
+            param: param.capitalize()
+        },
+        template="plotly_white",  # Thème moderne
+    )
 
-# Options pour améliorer le design
-fig.update_traces(line=dict(width=3))  # Épaisseur des lignes
-fig.update_layout(
-    title=dict(
-        text=f"Évolution de la Production pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
-        font=dict(size=20),
-        x=0.5,
-        xanchor="center"
-    ),
-    xaxis=dict(
-        title_text="",
-        tickangle=-45,
-        showticklabels=False  # Hide the date labels on the x-axis
-    ),
-    yaxis=dict(title_text=f"{param.capitalize()}"),
-    margin=dict(l=50, r=50, t=60, b=40),
-    height=400,
-)
+    # Options pour améliorer le design
+    fig.update_traces(line=dict(width=3))  # Épaisseur des lignes
+    fig.update_layout(
+        title=dict(
+            text=f"Évolution de la Production pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
+            font=dict(size=20),
+            x=0.5,
+            xanchor="center"
+        ),
+        xaxis=dict(
+            title_text="",
+            tickangle=-45,
+            showticklabels=False  # Hide the date labels on the x-axis
+        ),
+        yaxis=dict(title_text=f"{param.capitalize()}"),
+        margin=dict(l=50, r=50, t=60, b=40),
+        height=400,
+    )
 
 
-# Affichage du graphique
-st.plotly_chart(fig, use_container_width=True)
+    # Affichage du graphique
+    st.plotly_chart(fig, use_container_width=True)
+
+
