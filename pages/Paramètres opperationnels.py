@@ -16,7 +16,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("📊 Exploration des Données des Phases")
+st.title("Exploration des Données des Phases")
 st.markdown(
     """
     <div style="

@@ -16,7 +16,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("📊 Suivi laboratoire")
+st.title("Analyse laboratoire")
 st.markdown(
     """
     <div style="

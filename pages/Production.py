@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # Titre et description
-st.title("📊 Production - Station Wave 2")
+st.title("Production - Station Wave 2")
 st.markdown(
     """
     <div style="
@@ -245,7 +245,7 @@ else:
                 font-family: Arial, sans-serif; 
                 margin-bottom: 0;
             ">
-                Production Prévue : 120000 m³
+                Production Prévue : 105000 m³
             </h2>
         </div>
         """, 
@@ -270,7 +270,7 @@ else:
                 font-family: Arial, sans-serif; 
                 margin-bottom: 0;
             ">
-                Taux de production : {np.round(df[param].iloc[-1]/120000*100,2)} %
+                Taux de production : {np.round(df[param].iloc[-1]/105000*100,2)} %
             </h2>
         </div>
         """, 
