@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 import ezdxf
 import json
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
 
 
 
@@ -430,5 +432,39 @@ def laboratoir(df,param,don):
                         ay=-40  
                     )
 
+
+    st.plotly_chart(fig, use_container_width=True)
+def labo_oper(d1,d2,phase1,phase2,x,y):
+    df = pd.DataFrame({'date':d2[phase2]['date'],x:d1[phase1][x],y:d2[phase2][y]})
+    
+    df.replace(0, np.nan, inplace=True)
+    df.replace('/', np.nan, inplace=True)
+    df.replace('-', np.nan, inplace=True)
+    df.replace('CIP', np.nan, inplace=True)
+    df.replace('erroné', np.nan, inplace=True)
+    df.replace('en cours', np.nan, inplace=True)
+
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    fig.add_trace(
+        go.Scatter(x=df['date'], y=df[df.columns[1]], name=df.columns[1],line=dict(color='#095DBA', width=2)),
+        secondary_y=False,
+    )
+
+    fig.add_trace(
+        go.Scatter(x=df['date'], y=df[df.columns[2]], name=df.columns[2],line=dict(color='#FF4B4A', width=2),),
+        secondary_y=True,
+    )
+
+    fig.update_layout(
+        title_text=f"Corellation entre {df.columns[1][:4]} et {df.columns[2][:4]}",
+        title_x=0.3,
+        height=600
+    )
+
+    fig.update_xaxes(title_text="Date")
+
+    fig.update_yaxes(title_text=x, secondary_y=False)
+    fig.update_yaxes(title_text=y, secondary_y=True)
 
     st.plotly_chart(fig, use_container_width=True)
