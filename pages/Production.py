@@ -186,11 +186,16 @@ fig.update_layout(
         x=0.5,
         xanchor="center"
     ),
-    xaxis=dict(title_text="date", tickangle=-45),
+    xaxis=dict(
+        title_text="",
+        tickangle=-45,
+        showticklabels=False  # Hide the date labels on the x-axis
+    ),
     yaxis=dict(title_text=f"{param.capitalize()}"),
     margin=dict(l=50, r=50, t=60, b=40),
     height=400,
 )
+
 
 # Affichage du graphique
 st.plotly_chart(fig, use_container_width=True)

@@ -22,7 +22,7 @@ def visualise(df,param):
                 ], 
                np.nan, inplace=True)
     df['Date'] = df['date'].astype(str) + " " + df['poste'].astype(str)
-
+   
 
     # Conteneur professionnel avec largeur personnalisée
     st.markdown(
@@ -64,23 +64,24 @@ def visualise(df,param):
         },
         template="plotly_white",  # Thème moderne
     )
-
-    # Options pour améliorer le design
-    fig.update_traces(line=dict(width=3))  # Épaisseur des lignes
     fig.update_layout(
-        title=dict(
-            text=f"Évolution de {param.capitalize()}",
-            font=dict(size=20),
-            x=0.5,
-            xanchor="center"
-        ),
-        xaxis=dict(title_text="Date", tickangle=-45),
-        yaxis=dict(title_text=f"{param.capitalize()}"),
-        margin=dict(l=50, r=50, t=60, b=40),
-        height=400,
-    )
+    title=dict(
+        text=f"Évolution de {param.capitalize()}",
+        font=dict(size=20),
+        x=0.5,
+        xanchor="center"
+    ),
+    xaxis=dict(
+        title_text="Date",
+        tickangle=-45,
+        showticklabels=False  # This hides the date labels on the x-axis
+    ),
+    yaxis=dict(title_text=f"{param.capitalize()}"),
+    margin=dict(l=50, r=50, t=60, b=40),
+    height=400,
+)
 
-    # Affichage du graphique
+
     st.plotly_chart(fig, use_container_width=True)
 
 def consomation(df,param):
@@ -299,3 +300,135 @@ def anomali(data,data_file):
         file_name="anomalies_modifiees.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
+def laboratoir(df,param,don):
+  
+    df['Date'] = df['date'].astype(str)
+
+    # Conteneur professionnel avec largeur personnalisée
+    st.markdown(
+        f"""
+        <div style="
+            background-color: #F9F9F9; 
+            border: 1px solid #D1D1D1; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 0 auto 20px auto; 
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+            width: 60%; /* Ajustez ce pourcentage selon vos besoins */
+            max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+        ">
+            <h2 style="
+                text-align: center; 
+                color: #4A90E2; 
+                font-family: Arial, sans-serif; 
+                margin-bottom: 0;
+            ">
+                {param.capitalize()} Journalièr: {np.around(df[param].iloc[-1], 2)} 
+            </h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+
+
+    # Personnalisation du graphique avec un style moderne
+    fig = px.line(
+        df,
+        x="Date",
+        y=param,
+        title=f"Évolution de {param.capitalize()} au fil du temps",
+        labels={
+            "Date": "Date",
+            param: param.capitalize()
+        },
+        template="plotly_white",  # Thème moderne
+    )
+    fig.update_layout(
+    title=dict(
+        text=f"Évolution de {param.capitalize()}",
+        font=dict(size=20),
+        x=0.5,
+        xanchor="center"
+    ),
+    xaxis=dict(
+        title_text="Date",
+        tickangle=-45,
+        showticklabels=False  # This hides the date labels on the x-axis
+    ),
+    yaxis=dict(title_text=f"{param.capitalize()}"),
+    margin=dict(l=50, r=50, t=60, b=40),
+    height=400,
+    )
+    if param == "Conductivité(µS/cm)":
+        fig.add_hline(y=450, line_dash="dash", line_color="red", line_width=2)
+        fig.add_annotation(
+                        x=df['date'].iloc[-1], 
+                        y=450, 
+                        text="la Conductivité(µS/cm) doit être inférieur ou égale à 450",  
+                        showarrow=True, 
+                        arrowhead=2,  
+                        ax=0, 
+                        ay=-40  
+                    )
+    if param == "Cl2":
+        fig.add_hline(y=0.1, line_dash="dash", line_color="red", line_width=2)
+        fig.add_annotation(
+                        x=df['date'].iloc[-1], 
+                        y=0.1, 
+                        text="Cl2 doit être inférieur ou égale à 0.1",  
+                        showarrow=True, 
+                        arrowhead=2,  
+                        ax=0, 
+                        ay=-40  
+                    )
+    if param == "ORP(mV)":
+        fig.add_hline(y=250, line_dash="dash", line_color="red", line_width=2)
+        fig.add_hline(y=300, line_dash="dash", line_color="red", line_width=2)
+        fig.add_annotation(
+                x=df['date'].iloc[-1],  # Position X (la dernière date dans ce cas)
+                y=250,  # Position Y (sur la ligne horizontale à 250)
+                text="Min: 250 mV",  # Texte de l'annotation
+                showarrow=True,  # Afficher une flèche pointant vers le point
+                arrowhead=2,  # Type de flèche
+                ax=0,  # Position X de la flèche par rapport au texte
+                ay=-40  # Position Y de la flèche par rapport au texte
+            )
+    if (param == "pH" and don =="UF FEED"):
+        fig.add_hline(y=6.5, line_dash="dash", line_color="red", line_width=2)
+        fig.add_hline(y=8.5, line_dash="dash", line_color="red", line_width=2)
+        fig.add_annotation(
+                x=df['date'].iloc[-1],  # Position X (la dernière date dans ce cas)
+                y=6.5,  # Position Y (sur la ligne horizontale à 250)
+                text="Min: 6.5",  # Texte de l'annotation
+                showarrow=True,  # Afficher une flèche pointant vers le point
+                arrowhead=2,  # Type de flèche
+                ax=0,  # Position X de la flèche par rapport au texte
+                ay=-40  # Position Y de la flèche par rapport au texte
+            )
+    if "SDI" in param:
+        fig.add_hline(y=3, line_dash="dash", line_color="red", line_width=2)
+        fig.add_annotation(
+                        x=df['date'].iloc[-1], 
+                        y=3, 
+                        text="SDI15  doit être inférieur ou égale à 3",  
+                        showarrow=True, 
+                        arrowhead=2,  
+                        ax=0, 
+                        ay=-40  
+                    )
+    if (param == "NTU" and don =="UF FEED"):
+        fig.add_hline(y=0.1, line_dash="dash", line_color="red", line_width=2)
+        fig.add_annotation(
+                        x=df['date'].iloc[-1], 
+                        y=0.1, 
+                        text="NTU doit être inférieur ou égale à 0.1",  
+                        showarrow=True, 
+                        arrowhead=2,  
+                        ax=0, 
+                        ay=-40  
+                    )
+
+
+    st.plotly_chart(fig, use_container_width=True)
