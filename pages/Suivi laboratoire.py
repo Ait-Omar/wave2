@@ -11,12 +11,12 @@ from fonctions import laboratoir
 
 
 st.set_page_config(
-    page_title="Exploration des Données des Phases- Station Wave 2",
+    page_title="Suivi laboratoire - Station Wave 2",
     page_icon="📊",
     layout="wide"
 )
 
-st.title("📊 Exploration des Données des Phases")
+st.title("📊 Suivi laboratoire")
 st.markdown(
     """
     <div style="
