@@ -68,8 +68,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+c=st.sidebar.selectbox(f'Type de Consommation:', ['Consommation spécifique','Consommation Journalière'])
 # Charger les données
-df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='Produits chimiques')
+if c=='Consommation spécifique':
+    df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='CS Produits chimiques')
+elif c=='Consommation Journalière':
+    df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='C Prouits chimiques')
 print(df.columns)
 # Préparation des données
 df['date'] = pd.to_datetime(df['date'])
