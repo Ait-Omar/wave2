@@ -74,7 +74,6 @@ if c=='Consommation spécifique':
     df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='CS Produits chimiques')
 elif c=='Consommation Journalière':
     df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='C Prouits chimiques')
-print(df.columns)
 # Préparation des données
 df['date'] = pd.to_datetime(df['date'])
 df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format 'dd/mm/yyyy'

@@ -35,13 +35,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-sheets1 = ["UF FEED","Sortie UF","Avant FC","Après FC sud",
-          "Après FC nord","Perméat RO","Perméat RO globale","Transfert JTC"]
+sheets1 = ["self cleaning","Ultra filtration","Filtre à cartouche","RO-A","RO-B","RO-C","RO-D"]
 
 data1 = {}
 
 for sheet in sheets1:
-    data1[sheet] = pd.read_excel('suivi qualité.xlsx', sheet_name=sheet)
+    data1[sheet] = pd.read_excel('suivi 3h standart  DIPS.xlsx', sheet_name=sheet)
 
 
 # Barre latérale pour la sélection de la phase
