@@ -158,7 +158,7 @@ if param != "total production ":
                 font-family: Arial, sans-serif; 
                 margin-bottom: 0;
             ">
-                Ecart: {np.round(15000-df[param].iloc[-1],2)} m³
+                Ecart: {np.round(df[param].iloc[-1]-15000,2)} m³
             </h3>
         </div>
         """, 
@@ -295,7 +295,7 @@ else:
                 font-family: Arial, sans-serif; 
                 margin-bottom: 0;
             ">
-                Ecart: {np.round(105000-df[param].iloc[-1],2)} m³
+                Ecart: {np.round(df[param].iloc[-1]-105000,2)} m³
             </h3>
         </div>
         """, 

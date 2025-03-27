@@ -77,7 +77,7 @@ st.markdown("<h2 style='text-align: center;'>Analyse Énergie</h2>", unsafe_allo
 
 
 # Sélection du paramètre pour l'analyse
-param = st.sidebar.selectbox(f"Paramètre à visualiser", df.columns[1:])
+param = st.sidebar.selectbox(f"Paramètre à visualiser", df.columns[2:])
 
 # Visualisation des données
 def consomation_energie(df, param):
