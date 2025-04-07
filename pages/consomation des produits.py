@@ -164,14 +164,14 @@ def consomation(df, param):
         ),
         font=dict(size=14),  # Taille de la police pour le reste du graphique
         xaxis=dict(
-            title=dict(text="Date", font=dict(size=16)),  # Titre de l'axe X
+            # title=dict(text="Date", font=dict(size=16)),  # Titre de l'axe X
             tickangle=-45,  # Inclinaison des étiquettes de l'axe X pour une meilleure lisibilité
-            showgrid=True,  # Afficher une grille verticale
-            showticklabels=False  # Masquer les étiquettes de l'axe X
+            # showgrid=True,  # Afficher une grille verticale
+            showticklabels=True  # Masquer les étiquettes de l'axe X
         ),
         yaxis=dict(
             title=dict(text="Valeur", font=dict(size=16)),  # Titre de l'axe Y
-            showgrid=True  # Afficher une grille horizontale
+            # showgrid=True  # Afficher une grille horizontale
         ),
         margin=dict(l=40, r=40, t=60, b=40),  # Marges autour du graphique
         height=500,  # Hauteur du graphique
@@ -179,7 +179,7 @@ def consomation(df, param):
 
     # Tracé plus épais pour la ligne
     fig.update_traces(
-        line=dict(width=3),  # Épaisseur de la ligne
+        line=dict(width=2),  # Épaisseur de la ligne
         marker=dict(size=6)  # Taille des marqueurs (s'il y en a)
     )
 

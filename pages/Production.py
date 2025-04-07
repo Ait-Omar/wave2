@@ -270,7 +270,7 @@ else:
                 font-family: Arial, sans-serif; 
                 margin-bottom: 0;
             ">
-               Prévue: 105000 m³
+               Prévue: 120000 m³
             </h3>
         </div>
         """, 
@@ -295,7 +295,7 @@ else:
                 font-family: Arial, sans-serif; 
                 margin-bottom: 0;
             ">
-                Ecart: {np.round(df[param].iloc[-1]-105000,2)} m³
+                Ecart: {np.round(df[param].iloc[-1]-120000,2)} m³
             </h3>
         </div>
         """, 
@@ -320,7 +320,7 @@ else:
                 font-family: Arial, sans-serif; 
                 margin-bottom: 0;
             ">
-                Taux: {np.round(df[param].iloc[-1]/105000*100,2)} %
+                Taux: {np.round(df[param].iloc[-1]/120000*100,2)} %
             </h3>
         </div>
         """, 
