@@ -215,7 +215,7 @@ if param != "total production ":
         xaxis=dict(
             title_text="",
             tickangle=-45,
-            showticklabels=True  # Hide the date labels on the x-axis
+            showticklabels=False  # Hide the date labels on the x-axis
         ),
         yaxis=dict(title_text=f"{param.capitalize()}"),
         margin=dict(l=50, r=50, t=60, b=40),
@@ -352,7 +352,7 @@ else:
         xaxis=dict(
             title_text="",
             tickangle=-45,
-            showticklabels=True  # Hide the date labels on the x-axis
+            showticklabels=False  # Hide the date labels on the x-axis
         ),
         yaxis=dict(title_text=f"{param.capitalize()}"),
         margin=dict(l=50, r=50, t=60, b=40),
