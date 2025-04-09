@@ -306,7 +306,8 @@ def anomali(data,data_file):
 def laboratoir(df,param,don):
   
     df['Date'] = df['date'].astype(str)
-
+    df.replace(['-'], np.nan, inplace=True)
+    print(df.head(20))
     # Conteneur professionnel avec largeur personnalisée
     st.markdown(
         f"""

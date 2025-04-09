@@ -36,8 +36,7 @@ st.markdown(
 )
 
 # Chargement des données
-sheets = ["UF FEED","Sortie UF","Avant FC","Après FC sud",
-          "Après FC nord","Perméat RO","Perméat RO globale","Transfert JTC"]
+sheets = ["UF feed","PERMEAT UF","AVANT FC sud","AVANT FC nord","cf outlet","PERMEAT RO-A","PERMEAT RO-B","PERMEAT RO-C","PERMEAT RO-D","PERMEAT RO-E","PERMEAT RO-F","PERMEAT RO-G","PERMEAT RO-H"]
 data = {}
 for sheet in sheets:
     data[sheet] = pd.read_excel('suivi qualité.xlsx', sheet_name=sheet)
