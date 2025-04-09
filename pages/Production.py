@@ -204,7 +204,7 @@ if param != "total production ":
     )
 
     # Options pour améliorer le design
-    fig.update_traces(line=dict(width=3))  # Épaisseur des lignes
+    fig.update_traces(line=dict(width=2))  # Épaisseur des lignes
     fig.update_layout(
         title=dict(
             text=f"Évolution de la Production pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
@@ -218,7 +218,7 @@ if param != "total production ":
             showticklabels=False  # Hide the date labels on the x-axis
         ),
         yaxis=dict(title_text=f"{param.capitalize()}"),
-        margin=dict(l=50, r=50, t=60, b=40),
+       margin=dict(l=40, r=40, t=60, b=40),
         height=400,
     )
 
@@ -341,7 +341,7 @@ else:
     )
 
     # Options pour améliorer le design
-    fig.update_traces(line=dict(width=3))  # Épaisseur des lignes
+    fig.update_traces(line=dict(width=2))  # Épaisseur des lignes
     fig.update_layout(
         title=dict(
             text=f"Évolution de la Production pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
