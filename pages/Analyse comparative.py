@@ -35,33 +35,37 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-sheets1 = ["self cleaning","Ultra filtration","Filtre à cartouche","RO-A","RO-B","RO-C","RO-D"]
+sheets1 = ["Self cleaning","Ultra filtration","Filtre à cartouche","RO-A","RO-B","RO-C","RO-D"]
 
 data1 = {}
 
 for sheet in sheets1:
-    data1[sheet] = pd.read_excel('suivi 3h standart  DIPS.xlsx', sheet_name=sheet)
-
+    data1[sheet] = pd.read_excel('suivi 3h standart DIPS.xlsx', sheet_name=sheet)
 
 # Barre latérale pour la sélection de la phase
 st.sidebar.header("Options de Visualisation")
-don1 = st.sidebar.selectbox("Phases de traitement 1:", sheets1)
+don1 = st.sidebar.selectbox("Suivi sur site", sheets1)
 df1 = data1[don1]
+
 param1 = st.sidebar.selectbox(
     'Paramètre 1', 
-    df1.columns[1:],
+    df1.columns[2:],
     help=f"Choisissez un paramètre à afficher parmi les colonnes disponibles de {don1}."
 )
 
 sheets2 = ["SELF CLEANING", "UF", "RO-A", "RO-B", "RO-C", "RO-D"]
 data2 = {}
 for sheet in sheets2:
-    data2[sheet] = pd.read_excel('SUIVI DIPS (1).xlsx', sheet_name=sheet)
+    data2[sheet] = pd.read_excel('SUIVI STANDART DIPS.xlsx', sheet_name=sheet)
 
 
 
-don2 = st.sidebar.selectbox("Phases de traitement 2:", sheets2)
+don2 = st.sidebar.selectbox("Scada:", sheets2)
 df2 = data2[don2]
+
+df2.replace(['wbw','soak ceb1','w-f','f','F','w-bw','WBW','W.BW','W,BW','ceb1','CEB2','bw','wf','wb','W-F','W.F','hs','WF','wB','BW','w,b','W,F','W-BW','ceb2','SOAK CEB1','W,B','CEB1','SOAK CEB2','HS',
+                ], 
+               np.nan, inplace=True)
 param2 = st.sidebar.selectbox(
     'Paramètre 2', 
     df2.columns[2:],
@@ -84,7 +88,7 @@ date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
 
 # Filtrer les données par plage de dates
 df2['date'] = pd.to_datetime(df2['date'], format='%d/%m/%Y')
-df2 = df1[(df2["date"] >= date1) & (df1["date"] <= date2)]
+df2 = df2[(df2["date"] >= date1) & (df2["date"] <= date2)]
 df2['date'] = df2['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
 
 # st.sidebar.markdown(

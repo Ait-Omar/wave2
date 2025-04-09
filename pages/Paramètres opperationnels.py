@@ -39,7 +39,7 @@ st.markdown(
 sheets = ["SELF CLEANING", "UF", "RO-A", "RO-B", "RO-C", "RO-D"]
 data = {}
 for sheet in sheets:
-    data[sheet] = pd.read_excel('SUIVI DIPS (1).xlsx', sheet_name=sheet)
+    data[sheet] = pd.read_excel('SUIVI STANDART DIPS.xlsx', sheet_name=sheet)
 
 # Barre latérale pour la sélection de la phase
 st.sidebar.header("Options de Visualisation")

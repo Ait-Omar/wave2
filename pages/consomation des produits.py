@@ -164,7 +164,7 @@ def consomation(df, param):
         ),
         font=dict(size=14),  # Taille de la police pour le reste du graphique
         xaxis=dict(
-            # title=dict(text="Date", font=dict(size=16)),  # Titre de l'axe X
+            title=dict(text="Date", font=dict(size=16)),  # Titre de l'axe X
             tickangle=-45,  # Inclinaison des étiquettes de l'axe X pour une meilleure lisibilité
             # showgrid=True,  # Afficher une grille verticale
             showticklabels=True  # Masquer les étiquettes de l'axe X
