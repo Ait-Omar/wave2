@@ -13,6 +13,7 @@ import ezdxf
 import json
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import re
 
 
 
@@ -91,7 +92,7 @@ def consomation(df,param):
     fig = px.line(df,x="date",y=param)
     st.plotly_chart(fig,use_container_width=True,height = 200)
 
-def   consomation_energie(df,param):
+def consomation_energie(df,param):
 
     st.markdown(f"<h2 style='text-align: center;'>{param}</h2>", unsafe_allow_html=True)        
     fig = px.line(df,x="Date",y=param)
@@ -305,9 +306,11 @@ def anomali(data,data_file):
 
 def laboratoir(df,param,don):
   
-    df['Date'] = df['date'].astype(str)
+    # df['Date'] = df['date'].astype(str)
+    df[param] = df[param].astype(str).str.replace(',', '.')
     df.replace(['-'], np.nan, inplace=True)
-    print(df.head(20))
+    df[param] = pd.to_numeric(df[param], errors='coerce')
+    df['Date'] = df['date'].astype(str) + " " + df['poste'].astype(str)
     # Conteneur professionnel avec largeur personnalisée
     st.markdown(
         f"""
@@ -364,77 +367,78 @@ def laboratoir(df,param,don):
     margin=dict(l=50, r=50, t=60, b=40),
     height=400,
     )
-    if param == "Conductivité(µS/cm)":
-        fig.add_hline(y=450, line_dash="dash", line_color="red", line_width=2)
-        fig.add_annotation(
-                        x=df['date'].iloc[-1], 
-                        y=450, 
-                        text="la Conductivité(µS/cm) doit être inférieur ou égale à 450",  
-                        showarrow=True, 
-                        arrowhead=2,  
-                        ax=0, 
-                        ay=-40  
-                    )
-    if param == "Cl2":
-        fig.add_hline(y=0.1, line_dash="dash", line_color="red", line_width=2)
-        fig.add_annotation(
-                        x=df['date'].iloc[-1], 
-                        y=0.1, 
-                        text="Cl2 doit être inférieur ou égale à 0.1",  
-                        showarrow=True, 
-                        arrowhead=2,  
-                        ax=0, 
-                        ay=-40  
-                    )
-    if param == "ORP(mV)":
-        fig.add_hline(y=250, line_dash="dash", line_color="red", line_width=2)
-        fig.add_hline(y=300, line_dash="dash", line_color="red", line_width=2)
-        fig.add_annotation(
-                x=df['date'].iloc[-1],  # Position X (la dernière date dans ce cas)
-                y=250,  # Position Y (sur la ligne horizontale à 250)
-                text="Min: 250 mV",  # Texte de l'annotation
-                showarrow=True,  # Afficher une flèche pointant vers le point
-                arrowhead=2,  # Type de flèche
-                ax=0,  # Position X de la flèche par rapport au texte
-                ay=-40  # Position Y de la flèche par rapport au texte
-            )
-    if (param == "pH" and don =="UF FEED"):
-        fig.add_hline(y=6.5, line_dash="dash", line_color="red", line_width=2)
-        fig.add_hline(y=8.5, line_dash="dash", line_color="red", line_width=2)
-        fig.add_annotation(
-                x=df['date'].iloc[-1],  # Position X (la dernière date dans ce cas)
-                y=6.5,  # Position Y (sur la ligne horizontale à 250)
-                text="Min: 6.5",  # Texte de l'annotation
-                showarrow=True,  # Afficher une flèche pointant vers le point
-                arrowhead=2,  # Type de flèche
-                ax=0,  # Position X de la flèche par rapport au texte
-                ay=-40  # Position Y de la flèche par rapport au texte
-            )
-    if "SDI" in param:
-        fig.add_hline(y=3, line_dash="dash", line_color="red", line_width=2)
-        fig.add_annotation(
-                        x=df['date'].iloc[-1], 
-                        y=3, 
-                        text="SDI15  doit être inférieur ou égale à 3",  
-                        showarrow=True, 
-                        arrowhead=2,  
-                        ax=0, 
-                        ay=-40  
-                    )
-    if (param == "NTU" and don =="UF FEED"):
-        fig.add_hline(y=0.1, line_dash="dash", line_color="red", line_width=2)
-        fig.add_annotation(
-                        x=df['date'].iloc[-1], 
-                        y=0.1, 
-                        text="NTU doit être inférieur ou égale à 0.1",  
-                        showarrow=True, 
-                        arrowhead=2,  
-                        ax=0, 
-                        ay=-40  
-                    )
+    # if param == "Conductivité(µS/cm)":
+    #     fig.add_hline(y=450, line_dash="dash", line_color="red", line_width=2)
+    #     fig.add_annotation(
+    #                     x=df['date'].iloc[-1], 
+    #                     y=450, 
+    #                     text="la Conductivité(µS/cm) doit être inférieur ou égale à 450",  
+    #                     showarrow=True, 
+    #                     arrowhead=2,  
+    #                     ax=0, 
+    #                     ay=-40  
+    #                 )
+    # if param == "Cl2":
+    #     fig.add_hline(y=0.1, line_dash="dash", line_color="red", line_width=2)
+    #     fig.add_annotation(
+    #                     x=df['date'].iloc[-1], 
+    #                     y=0.1, 
+    #                     text="Cl2 doit être inférieur ou égale à 0.1",  
+    #                     showarrow=True, 
+    #                     arrowhead=2,  
+    #                     ax=0, 
+    #                     ay=-40  
+    #                 )
+    # if param == "ORP(mV)":
+    #     fig.add_hline(y=250, line_dash="dash", line_color="red", line_width=2)
+    #     fig.add_hline(y=300, line_dash="dash", line_color="red", line_width=2)
+    #     fig.add_annotation(
+    #             x=df['date'].iloc[-1],  # Position X (la dernière date dans ce cas)
+    #             y=250,  # Position Y (sur la ligne horizontale à 250)
+    #             text="Min: 250 mV",  # Texte de l'annotation
+    #             showarrow=True,  # Afficher une flèche pointant vers le point
+    #             arrowhead=2,  # Type de flèche
+    #             ax=0,  # Position X de la flèche par rapport au texte
+    #             ay=-40  # Position Y de la flèche par rapport au texte
+    #         )
+    # if (param == "pH" and don =="UF FEED"):
+    #     fig.add_hline(y=6.5, line_dash="dash", line_color="red", line_width=2)
+    #     fig.add_hline(y=8.5, line_dash="dash", line_color="red", line_width=2)
+    #     fig.add_annotation(
+    #             x=df['date'].iloc[-1],  # Position X (la dernière date dans ce cas)
+    #             y=6.5,  # Position Y (sur la ligne horizontale à 250)
+    #             text="Min: 6.5",  # Texte de l'annotation
+    #             showarrow=True,  # Afficher une flèche pointant vers le point
+    #             arrowhead=2,  # Type de flèche
+    #             ax=0,  # Position X de la flèche par rapport au texte
+    #             ay=-40  # Position Y de la flèche par rapport au texte
+    #         )
+    # if "SDI" in param:
+    #     fig.add_hline(y=3, line_dash="dash", line_color="red", line_width=2)
+    #     fig.add_annotation(
+    #                     x=df['date'].iloc[-1], 
+    #                     y=3, 
+    #                     text="SDI15  doit être inférieur ou égale à 3",  
+    #                     showarrow=True, 
+    #                     arrowhead=2,  
+    #                     ax=0, 
+    #                     ay=-40  
+    #                 )
+    # if (param == "NTU" and don =="UF FEED"):
+    #     fig.add_hline(y=0.1, line_dash="dash", line_color="red", line_width=2)
+    #     fig.add_annotation(
+    #                     x=df['date'].iloc[-1], 
+    #                     y=0.1, 
+    #                     text="NTU doit être inférieur ou égale à 0.1",  
+    #                     showarrow=True, 
+    #                     arrowhead=2,  
+    #                     ax=0, 
+    #                     ay=-40  
+    #                 )
 
 
     st.plotly_chart(fig, use_container_width=True)
+
 def labo_oper(d1,d2,phase1,phase2,x,y):
     df = pd.DataFrame({'date':d2[phase2]['date'],x:d1[phase1][x],y:d2[phase2][y]})
     
@@ -444,6 +448,7 @@ def labo_oper(d1,d2,phase1,phase2,x,y):
     df.replace('CIP', np.nan, inplace=True)
     df.replace('erroné', np.nan, inplace=True)
     df.replace('en cours', np.nan, inplace=True)
+    
 
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
@@ -469,3 +474,77 @@ def labo_oper(d1,d2,phase1,phase2,x,y):
     fig.update_yaxes(title_text=y, secondary_y=True)
 
     st.plotly_chart(fig, use_container_width=True)
+
+def transform_laboratory_data(file_path, sheet_name=None):
+    """
+    Transforme une ou toutes les feuilles Excel de laboratoire :
+    - Détection dynamique des paramètres
+    - Conversion P1/P2/P3 → format long
+    - Ajout des heures de poste
+    - Tri par date/poste
+    - Colonnes renommées par feuille
+    """
+
+    excel_file = pd.ExcelFile(file_path)
+    sheet_names = [sheet_name] if sheet_name else excel_file.sheet_names
+
+    def transform_one_sheet(sheet):
+        df = pd.read_excel(file_path, sheet_name=sheet)
+
+        # Nettoyage des colonnes
+        df.columns = df.columns.str.replace(r'\n.*', '', regex=True)
+        df.columns = df.columns.str.replace(r'\s+', ' ', regex=True).str.strip()
+
+        # Détection automatique des paramètres (ex: 'T (°C)-P1', 'Ph-P2', etc.)
+        param_pattern = re.compile(r"(.+)-P[1-3]")
+        detected_params = set()
+        for col in df.columns:
+            match = param_pattern.match(col)
+            if match:
+                param_name = match.group(1).strip()
+                detected_params.add(param_name)
+
+        # Nettoyage : création des bons noms 'param-Pi'
+        rename_dict = {}
+        for param in detected_params:
+            for i in range(1, 4):
+                possible_names = [col for col in df.columns if f"{param}-P{i}" in col or f"{param} (mv)-P{i}" in col or f"{param} (mg/l)-P{i}" in col]
+                if possible_names:
+                    rename_dict[possible_names[0]] = f"{param}-P{i}"
+
+        df.rename(columns=rename_dict, inplace=True)
+
+        # Création des sous-dataframes par point (P1, P2, P3)
+        dfs = []
+        for i in range(1, 4):
+            cols = ['date'] + [f"{param}-P{i}" for param in detected_params if f"{param}-P{i}" in df.columns]
+            if len(cols) > 1:
+                sub_df = df[cols].copy()
+                sub_df['point'] = f'P{i}'
+                param_cols = [col.split('-')[0] for col in cols[1:]]
+                renamed_cols = [f"{param}_{sheet}" for param in param_cols]
+                sub_df.columns = ['date'] + renamed_cols + ['point']
+                sub_df['source'] = sheet
+                dfs.append(sub_df)
+
+        result = pd.concat(dfs, ignore_index=True)
+
+        # Ajouter les horaires de poste
+        poste_mapping = {'P1': '02:00:00', 'P2': '10:00:00', 'P3': '18:00:00'}
+        result['poste'] = result['point'].map(poste_mapping)
+
+        return result
+
+    # Fusion de toutes les feuilles sélectionnées
+    combined_df = pd.concat([transform_one_sheet(sheet) for sheet in sheet_names], ignore_index=True)
+
+    # Format & tri
+    combined_df['poste'] = pd.to_datetime(combined_df['poste'], format='%H:%M:%S').dt.time
+    combined_df['date'] = pd.to_datetime(combined_df['date'], errors='coerce')
+    combined_df.sort_values(by=['date', 'poste'], inplace=True)
+    combined_df.reset_index(drop=True, inplace=True)
+
+    # Colonnes : date, poste, puis tout le reste
+    cols_order = ['date', 'poste'] + [col for col in combined_df.columns if col not in ['date', 'poste']]
+    return combined_df[cols_order]
+

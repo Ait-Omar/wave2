@@ -73,7 +73,7 @@ df = df[(df["date"] >= date1) & (df["date"] <= date2)]
 df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
 
 # Titre principal
-st.markdown("<h2 style='text-align: center;'>Analyse Énergie</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;'> Consommation Énergie</h2>", unsafe_allow_html=True)
 
 
 # Sélection du paramètre pour l'analyse
@@ -147,7 +147,7 @@ def consomation_energie(df, param):
             title=dict(text="Date", font=dict(size=16)),  # Titre de l'axe X
             tickangle=-45,  # Inclinaison des étiquettes de l'axe X pour une meilleure lisibilité
             # showgrid=True ,# Afficher une grille verticale
-            showticklabels=True
+            showticklabels=False
         ),
         yaxis=dict(
             title=dict(text="Valeur", font=dict(size=16)),  # Titre de l'axe Y

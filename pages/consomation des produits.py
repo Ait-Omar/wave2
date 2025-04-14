@@ -167,7 +167,7 @@ def consomation(df, param):
             title=dict(text="Date", font=dict(size=16)),  # Titre de l'axe X
             tickangle=-45,  # Inclinaison des étiquettes de l'axe X pour une meilleure lisibilité
             # showgrid=True,  # Afficher une grille verticale
-            showticklabels=False  # Masquer les étiquettes de l'axe X
+            showticklabels=True  # Masquer les étiquettes de l'axe X
         ),
         yaxis=dict(
             title=dict(text="Valeur", font=dict(size=16)),  # Titre de l'axe Y
