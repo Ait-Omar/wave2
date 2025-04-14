@@ -7,6 +7,8 @@ import plotly.express as px
 import json
 from datetime import datetime
 import numpy as np
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 from fonctions import laboratoir,transform_laboratory_data
 
 
@@ -35,31 +37,16 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Chargement des données
-sheets_labo = ["UF feed","PERMEAT UF","AVANT FC sud","AVANT FC nord","cf outlet",
-          "PERMEAT RO-A","PERMEAT RO-B","PERMEAT RO-C","PERMEAT RO-D",
-          "PERMEAT RO-E","PERMEAT RO-F","PERMEAT RO-G","PERMEAT RO-H"]
-data_labo = {}
-for sheet in sheets_labo:
-    data_labo[sheet] = pd.read_excel('suivi qualité.xlsx', sheet_name=sheet)
-
-sheets_scada = ["SELF CLEANING", "UF", "RO-A", "RO-B", "RO-C", "RO-D"]
-data_scada = {}
-for sheet in sheets_scada:
-    data_scada[sheet] = pd.read_excel('SUIVI STANDART DIPS.xlsx', sheet_name=sheet)
-
-sheets_chantier = ["Self cleaning", "Ultra filtration", "Filtre à cartouche", "RO-A", "RO-B", "RO-C","RO-D"]
-data_chantier = {}
-for sheet in sheets_chantier:
-    data_chantier[sheet] = pd.read_excel('suivi 3h standart DIPS.xlsx', sheet_name=sheet)
 
 option = st.sidebar.multiselect("Options",['Laboratoir','Scada','Chantier'])
 
 
 if option == ['Laboratoir']:
+    excel_file = pd.ExcelFile('suivi qualité.xlsx')
+    sheet_names = excel_file.sheet_names[1:]
     # Barre latérale pour la sélection de la phase
     st.sidebar.header("Options de Visualisation")
-    don = st.sidebar.radio("Phases de traitement :", sheets_labo)
+    don = st.sidebar.radio("Phases de traitement :", sheet_names )
     df_labo = transform_laboratory_data('suivi qualité.xlsx', sheet_name=don)
     # Charger la feuille sélectionnée
     # df_labo = data_labo[don]
@@ -148,9 +135,11 @@ if option == ['Laboratoir']:
 
     laboratoir(df_labo, param,don)
 elif option == ['Scada']:
+    excel_file = pd.ExcelFile('SUIVI STANDART DIPS.xlsx')
+    sheet_names = excel_file.sheet_names[1:]
     # Barre latérale pour la sélection de la phase
     st.sidebar.header("Options de Visualisation")
-    don = st.sidebar.radio("Phases de traitement :", sheets_scada)
+    don = st.sidebar.radio("Phases de traitement :", sheet_names)
     df_labo =  pd.read_excel('SUIVI STANDART DIPS.xlsx', sheet_name=don)
     # Charger la feuille sélectionnée
     # df_labo = data_labo[don]
@@ -239,143 +228,248 @@ elif option == ['Scada']:
 
     laboratoir(df_labo, param,don)
 elif option == ['Chantier']:
-  # Barre latérale pour la sélection de la phase
-    st.sidebar.header("Options de Visualisation")
-    don = st.sidebar.radio("Phases de traitement :", sheets_chantier)
-    df_labo =  pd.read_excel('suivi 3h standart DIPS.xlsx', sheet_name=don)
-    print(df_labo.columns)
+    excel_file = pd.ExcelFile('suivi 3h standart DIPS.xlsx')
+    sheet_names = excel_file.sheet_names[1:]
 
-    df_labo['date'] = df_labo['date'].astype(str) + " " + df_labo['Heur'].astype(str)
-    df_labo['date'] = pd.to_datetime(df_labo['date'])
-    df_labo['date'] = df_labo['date'].dt.strftime('%d/%m/%Y')  # Format 'dd/mm/yyyy'
+#   Barre latérale pour la sélection de la phase
+    st.sidebar.header("Options de Visualisation")
+    don = st.sidebar.radio("Phases de traitement :", sheet_names)
+    df=  pd.read_excel('suivi 3h standart DIPS.xlsx', sheet_name=don)
+
+
+    df['date'] = pd.to_datetime(df['date'])
+    df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format 'dd/mm/yyyy'
     
 
 
-    # startDate = pd.to_datetime(df_labo["date"], format='%d/%m/%Y').min()
-    # endDate = pd.to_datetime(df_labo["date"], format='%d/%m/%Y').max()
+    startDate = pd.to_datetime(df["date"], format='%d/%m/%Y').min()
+    endDate = pd.to_datetime(df["date"], format='%d/%m/%Y').max()
 
 
-    # st.sidebar.subheader("Filtrer par période")
-    # date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
-    # date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
+    st.sidebar.subheader("Filtrer par période")
+    date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
+    date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
 
-    # df_labo['date'] = pd.to_datetime(df_labo['date'], format='%d/%m/%Y')
-    # df_labo = df_labo[(df_labo["date"] >= date1) & (df_labo["date"] <= date2)]
-    # df_labo['date'] = df_labo['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
+    df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
+    df = df[(df["date"] >= date1) & (df["date"] <= date2)]
+    df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
  
-    # st.sidebar.markdown(
-    #     """
-    #     <h3 style="
-    #         color: #4A90E2; 
-    #         font-family: Arial, sans-serif; 
-    #         margin-bottom: 15px;
-    #     ">
-    #         Sélectionnez un paramètre
-    #     </h3>
-    #     """,
-    #     unsafe_allow_html=True
-    # )
+    st.sidebar.markdown(
+        """
+        <h3 style="
+            color: #4A90E2; 
+            font-family: Arial, sans-serif; 
+            margin-bottom: 15px;
+        ">
+            Sélectionnez un paramètre
+        </h3>
+        """,
+        unsafe_allow_html=True
+    )
 
-    # # Sélection du paramètre à visualiser
-    # param = st.sidebar.selectbox(
-    #     'Paramètre', 
-    #      [col for col in df_labo.columns if col not in ['date', 'Heur']] ,
-    #     help="Choisissez un paramètre à afficher parmi les colonnes disponibles."
-    # )
+    # Sélection du paramètre à visualiser
+    param = st.sidebar.selectbox(
+        'Paramètre', 
+         [col for col in df.columns if col not in ['date', 'Heur']] ,
+        help="Choisissez un paramètre à afficher parmi les colonnes disponibles."
+    )
 
-    # # Style pour le titre de la phase
-    # st.markdown(
-    #     f"""
-    #     <h2 style="
-    #         text-align: center; 
-    #         color: #4A90E2; 
-    #         font-family: Arial, sans-serif; 
-    #         margin-bottom: 10px;
-    #     ">
-    #         Phase de traitement : {don}
-    #     </h2>
-    #     """,
-    #     unsafe_allow_html=True
-    # )
+    # Style pour le titre de la phase
+    st.markdown(
+        f"""
+        <h2 style="
+            text-align: center; 
+            color: #4A90E2; 
+            font-family: Arial, sans-serif; 
+            margin-bottom: 10px;
+        ">
+            Phase de traitement : {don}
+        </h2>
+        """,
+        unsafe_allow_html=True
+    )
 
-    # # Période formatée avec un style professionnel
-    # st.markdown(
-    #     f"""
-    #     <h4 style="
-    #         text-align: center; 
-    #         color: #333333; 
-    #         font-family: Arial, sans-serif; 
-    #         margin-top: 5px;
-    #     ">
-    #         Période : {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}
-    #     </h4>
-    #     """,
-    #     unsafe_allow_html=True
-    # )
+    # Période formatée avec un style professionnel
+    st.markdown(
+        f"""
+        <h4 style="
+            text-align: center; 
+            color: #333333; 
+            font-family: Arial, sans-serif; 
+            margin-top: 5px;
+        ">
+            Période : {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}
+        </h4>
+        """,
+        unsafe_allow_html=True
+    )
 
-    # st.markdown(
-    #     f"""
-    #     <h3 style="
-    #         text-align: center; 
-    #         color: #4A90E2; 
-    #         font-family: Arial, sans-serif; 
-    #         margin-bottom: 20px;
-    #     ">
-    #         Visualisation de {param.capitalize()}
-    #     </h3>
-    #     """,
-    #     unsafe_allow_html=True
-    # )
+    st.markdown(
+        f"""
+        <h3 style="
+            text-align: center; 
+            color: #4A90E2; 
+            font-family: Arial, sans-serif; 
+            margin-bottom: 20px;
+        ">
+            Visualisation de {param.capitalize()}
+        </h3>
+        """,
+        unsafe_allow_html=True
+    )
 
-    #     # df['Date'] = df['date'].astype(str)
-    # df_labo[param] = df_labo[param].astype(str).str.replace(',', '.')
-    # df_labo.replace(['-'], np.nan, inplace=True)
-    # df_labo[param] = pd.to_numeric(df_labo[param], errors='coerce')
-    # df_labo['Date'] = df_labo['date'].astype(str) + " " + df_labo['Heur'].astype(str)
-    # print(df_labo.columns)
-    # # Conteneur professionnel avec largeur personnalisée
-    # st.markdown(
-    #     f"""
-    #     <div style="
-    #         background-color: #F9F9F9; 
-    #         border: 1px solid #D1D1D1; 
-    #         border-radius: 8px; 
-    #         padding: 20px; 
-    #         margin: 0 auto 20px auto; 
-    #         box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
-    #         width: 60%; /* Ajustez ce pourcentage selon vos besoins */
-    #         max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
-    #     ">
-    #         <h2 style="
-    #             text-align: center; 
-    #             color: #4A90E2; 
-    #             font-family: Arial, sans-serif; 
-    #             margin-bottom: 0;
-    #         ">
-    #             {param.capitalize()} Journalièr: {np.around(df_labo[param].iloc[-1], 2)} 
-    #         </h2>
-    #     </div>
-    #     """, 
-    #     unsafe_allow_html=True
-    # )
-
+        # df['Date'] = df['date'].astype(str)
+    df[param] = df[param].astype(str).str.replace(',', '.')
+    df.replace(['-'], np.nan, inplace=True)
+    df[param] = pd.to_numeric(df[param], errors='coerce')
+    df['Date'] = df['date'].astype(str) + " " + df['Heur'].astype(str)
+    # Conteneur professionnel avec largeur personnalisée
+    st.markdown(
+        f"""
+        <div style="
+            background-color: #F9F9F9; 
+            border: 1px solid #D1D1D1; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 0 auto 20px auto; 
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+            width: 60%; /* Ajustez ce pourcentage selon vos besoins */
+            max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+        ">
+            <h2 style="
+                text-align: center; 
+                color: #4A90E2; 
+                font-family: Arial, sans-serif; 
+                margin-bottom: 0;
+            ">
+                {param.capitalize()} Journalièr: {np.around(df[param].iloc[-1], 2)} 
+            </h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
 
 
-    # # Personnalisation du graphique avec un style moderne
+
+    # Personnalisation du graphique avec un style moderne
+    fig = px.line(
+        df,
+        x="Date",
+        y=param,
+        title=f"Évolution de {param.capitalize()} au fil du temps",
+        labels={
+            "Date": "Date",
+            param: param.capitalize()
+        },
+        template="plotly_white",  # Thème moderne
+    )
+    fig.update_layout(
+    title=dict(
+        text=f"Évolution de {param.capitalize()}",
+        font=dict(size=20),
+        x=0.5,
+        xanchor="center"
+    ),
+    xaxis=dict(
+        title_text="Date",
+        tickangle=-45,
+        showticklabels=False  # This hides the date labels on the x-axis
+    ),
+    yaxis=dict(title_text=f"{param.capitalize()}"),
+    margin=dict(l=50, r=50, t=60, b=40),
+    height=400,
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+elif option == ['Laboratoir', 'Chantier']:
+    excel_file1 = pd.ExcelFile('suivi 3h standart DIPS.xlsx')
+    sheet_names1 = excel_file1.sheet_names[1:]
+
+#   Barre latérale pour la sélection de la phase
+    st.sidebar.header("Chantier")
+    don1 = st.sidebar.radio("Phases de traitement :", sheet_names1)
+    df1=  pd.read_excel('suivi 3h standart DIPS.xlsx', sheet_name=don1)
+
+    excel_file2 = pd.ExcelFile('suivi qualité.xlsx')
+    sheet_names2 = excel_file2.sheet_names[1:]
+  
+#   Barre latérale pour la sélection de la phase
+    st.sidebar.header("Laboratoire")
+    don2 = st.sidebar.radio("Phases de traitement :", sheet_names2)
+    df2=  pd.read_excel('suivi qualité.xlsx', sheet_name=don2)
+
+
+    startDate = pd.to_datetime(df1["date"], format='%d/%m/%Y').min()
+    endDate = pd.to_datetime(df1["date"], format='%d/%m/%Y').max()
+
+    st.sidebar.subheader("Filtrer par période")
+    date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
+    date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
+
+    df1['date'] = pd.to_datetime(df1['date'], format='%d/%m/%Y')
+    df1 = df1[(df1["date"] >= date1) & (df1["date"] <= date2)]
+    df1['date'] = df1['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
+ 
+    st.sidebar.markdown(
+        """
+        <h3 style="
+            color: #4A90E2; 
+            font-family: Arial, sans-serif; 
+            margin-bottom: 15px;
+        ">
+            Sélectionnez un paramètre
+        </h3>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Sélection du paramètre à visualiser
+    param1 = st.sidebar.selectbox(
+        'Paramètre', 
+         [col for col in df1.columns if col not in ['date', 'Heur']] ,
+        help="Choisissez un paramètre à afficher parmi les colonnes disponibles."
+    )
+    param2 = st.sidebar.selectbox(
+        'Paramètre', 
+         [col for col in df2.columns if col not in ['date', 'Heur']] ,
+        help="Choisissez un paramètre à afficher parmi les colonnes disponibles."
+    )
+
+
+        # df['Date'] = df['date'].astype(str)
+    df1[param1] = df1[param1].astype(str).str.replace(',', '.')
+    df1.replace(['-'], np.nan, inplace=True)
+    df1[param1] = pd.to_numeric(df1[param1], errors='coerce')
+    df1['Date'] = df1['date'].astype(str) + " " + df1['Heur'].astype(str)
+
+
+    df2.replace(0, np.nan, inplace=True)
+    df2.replace('/', np.nan, inplace=True)
+    df2.replace('-', np.nan, inplace=True)
+    df2.replace('CIP', np.nan, inplace=True)
+    df2.replace('erroné', np.nan, inplace=True)
+    df2.replace('en cours', np.nan, inplace=True)
+    df = {'Date':df1['Date']}
+    df[param1]=df1[param1]
+    df[param2]=df2[param2]
+    df = pd.DataFrame(df)
+   
+    # Conteneur professionnel avec largeur personnalisée
+    # Personnalisation du graphique avec un style moderne
     # fig = px.line(
-    #     df_labo,
+    #     df,
     #     x="Date",
-    #     y=param,
-    #     title=f"Évolution de {param.capitalize()} au fil du temps",
+    #     y=df.columns[1:],
+    #     title=f"Corrélation entre {param1.capitalize()} et {param1.capitalize()} au fil du temps",
     #     labels={
     #         "Date": "Date",
-    #         param: param.capitalize()
+    #         param1: param1.capitalize()
     #     },
     #     template="plotly_white",  # Thème moderne
     # )
     # fig.update_layout(
     # title=dict(
-    #     text=f"Évolution de {param.capitalize()}",
+    #     text=f"Corrélation entre de {param1.capitalize()} et {param2.capitalize()}",
     #     font=dict(size=20),
     #     x=0.5,
     #     xanchor="center"
@@ -385,9 +479,34 @@ elif option == ['Chantier']:
     #     tickangle=-45,
     #     showticklabels=False  # This hides the date labels on the x-axis
     # ),
-    # yaxis=dict(title_text=f"{param.capitalize()}"),
+    # yaxis=dict(title_text=f"{param1.capitalize()}"),
     # margin=dict(l=50, r=50, t=60, b=40),
     # height=400,
     # )
 
     # st.plotly_chart(fig, use_container_width=True)
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    fig.add_trace(
+        go.Scatter(x=df['Date'], y=df[df.columns[1]], name=df.columns[1],line=dict(color='#095DBA', width=2)),
+        secondary_y=False,
+    )
+
+    fig.add_trace(
+        go.Scatter(x=df['Date'], y=df[df.columns[2]], name=df.columns[2],line=dict(color='#FF4B4A', width=2),),
+        secondary_y=True,
+    )
+
+    fig.update_layout(
+        title_text=f"Corellation entre {df.columns[1]} et {df.columns[2]}",
+        title_x=0.3,
+        height=600,
+        
+    )
+
+    fig.update_xaxes(title_text="Date")
+
+    fig.update_yaxes(title_text=df.columns[1], secondary_y=False)
+    fig.update_yaxes(title_text=df.columns[2], secondary_y=True)
+
+    st.plotly_chart(fig, use_container_width=True)
