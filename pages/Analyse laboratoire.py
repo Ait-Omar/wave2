@@ -8,6 +8,8 @@ import json
 from datetime import datetime
 import numpy as np
 from plotly.subplots import make_subplots
+import seaborn as sns
+import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from fonctions import laboratoir,transform_laboratory_data
 
@@ -396,7 +398,15 @@ elif option == ['Laboratoir', 'Chantier']:
 #   Barre latérale pour la sélection de la phase
     st.sidebar.header("Laboratoire")
     don2 = st.sidebar.radio("Phases de traitement :", sheet_names2)
-    df2=  pd.read_excel('suivi qualité.xlsx', sheet_name=don2)
+    df2 = transform_laboratory_data('suivi qualité.xlsx', sheet_name=don2)
+    # df2=  pd.read_excel('suivi qualité.xlsx', sheet_name=don2)
+
+
+
+
+
+
+
 
 
     startDate = pd.to_datetime(df1["date"], format='%d/%m/%Y').min()
@@ -431,7 +441,7 @@ elif option == ['Laboratoir', 'Chantier']:
     )
     param2 = st.sidebar.selectbox(
         'Paramètre', 
-         [col for col in df2.columns if col not in ['date', 'Heur']] ,
+        [col for col in df2.columns if col not in ['date', 'point', 'poste', 'source']],
         help="Choisissez un paramètre à afficher parmi les colonnes disponibles."
     )
 
@@ -449,64 +459,115 @@ elif option == ['Laboratoir', 'Chantier']:
     df2.replace('CIP', np.nan, inplace=True)
     df2.replace('erroné', np.nan, inplace=True)
     df2.replace('en cours', np.nan, inplace=True)
-    df = {'Date':df1['Date']}
-    df[param1]=df1[param1]
-    df[param2]=df2[param2]
+    df = {
+    'Date': df1['Date'],
+    param1: pd.to_numeric(df1[param1], errors='coerce'),
+    param2: pd.to_numeric(df2[param2], errors='coerce')
+    }
     df = pd.DataFrame(df)
-   
-    # Conteneur professionnel avec largeur personnalisée
-    # Personnalisation du graphique avec un style moderne
-    # fig = px.line(
-    #     df,
-    #     x="Date",
-    #     y=df.columns[1:],
-    #     title=f"Corrélation entre {param1.capitalize()} et {param1.capitalize()} au fil du temps",
-    #     labels={
-    #         "Date": "Date",
-    #         param1: param1.capitalize()
-    #     },
-    #     template="plotly_white",  # Thème moderne
-    # )
-    # fig.update_layout(
-    # title=dict(
-    #     text=f"Corrélation entre de {param1.capitalize()} et {param2.capitalize()}",
-    #     font=dict(size=20),
-    #     x=0.5,
-    #     xanchor="center"
-    # ),
-    # xaxis=dict(
-    #     title_text="Date",
-    #     tickangle=-45,
-    #     showticklabels=False  # This hides the date labels on the x-axis
-    # ),
-    # yaxis=dict(title_text=f"{param1.capitalize()}"),
-    # margin=dict(l=50, r=50, t=60, b=40),
-    # height=400,
-    # )
 
-    # st.plotly_chart(fig, use_container_width=True)
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    # Melt for long-form to control styling better
+    df_melted = df.melt(id_vars='Date', var_name='Parameter', value_name='Value')
 
-    fig.add_trace(
-        go.Scatter(x=df['Date'], y=df[df.columns[1]], name=df.columns[1],line=dict(color='#095DBA', width=2)),
-        secondary_y=False,
-    )
+    # Title
+    st.markdown(f"<h3 style='text-align: center;'>Corrélation entre {param1} de {don1} et {param2} de {don2}</h3>", unsafe_allow_html=True)
 
-    fig.add_trace(
-        go.Scatter(x=df['Date'], y=df[df.columns[2]], name=df.columns[2],line=dict(color='#FF4B4A', width=2),),
-        secondary_y=True,
-    )
+    fig = px.line(
+    df_melted,
+    x="Date",
+    y="Value",
+    color='Parameter',
+    color_discrete_sequence=['#1f77b4', '#ff7f0e']
+)
 
     fig.update_layout(
-        title_text=f"Corellation entre {df.columns[1]} et {df.columns[2]}",
-        title_x=0.3,
-        height=600,
-        
+        font=dict(family="Arial", size=14),
+        legend=dict(
+            title="",
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
+        xaxis=dict(
+            title="Date",
+            tickformat="%d/%m",  # Only show day/month
+            tickangle=0,
+            nticks=10,  # Limit number of ticks shown
+            showgrid=False
+        ),
+        yaxis=dict(
+            title="Valeur",
+            showgrid=True,
+            gridcolor="lightgrey"
+        ),
+        plot_bgcolor="white",
+        height=500
     )
 
-    fig.update_xaxes(title_text="Date")
+    st.plotly_chart(fig, use_container_width=True)
 
-    fig.update_yaxes(title_text=df.columns[1], secondary_y=False)
-    fig.update_yaxes(title_text=df.columns[2], secondary_y=True)
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=df['Date'], y=df[param1],
+                            name=param1, yaxis="y1", line=dict(color='#1f77b4')))
+    fig.add_trace(go.Scatter(x=df['Date'], y=df[param2],
+                            name=param2, yaxis="y2", line=dict(color='#ff7f0e')))
+
+    fig.update_layout(
+        title=f"Évolution parallèle de {param1} et {param2}",
+        xaxis=dict(title="Date"),
+        yaxis=dict(title=param1, titlefont=dict(color='#1f77b4'), tickfont=dict(color='#1f77b4')),
+        yaxis2=dict(title=param2, titlefont=dict(color='#ff7f0e'), tickfont=dict(color='#ff7f0e'),
+                    overlaying='y', side='right'),
+        legend=dict(x=0.5, y=1.1, orientation='h'),
+        height=500,
+        plot_bgcolor="white"
+    )
 
     st.plotly_chart(fig, use_container_width=True)
+    
+    # corr = df[[param1, param2]].corr()
+
+    # fig, ax = plt.subplots()
+    # sns.heatmap(corr, annot=True, cmap='coolwarm', vmin=-1, vmax=1, ax=ax)
+    # st.pyplot(fig)
+
+    # st.markdown(f"<h3 style='text-align: center;'>Corrélation entre {param1} de {don1} et {param2} de {don2}</h3>", unsafe_allow_html=True)        
+    # fig = px.line(df,x="Date",y=df.columns[1:])
+    # fig.update_traces(line=dict(color='#00A8CC'), selector=dict(name=df1.columns[1]))
+    # fig.update_traces(line=dict(color='#FF4B4A'), selector=dict(name=df1.columns[2]))
+    # st.plotly_chart(fig,use_container_width=True,height = 200)
+
+
+    
+    # # st.plotly_chart(fig, use_container_width=True)
+    # fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    # fig.add_trace(
+    #     go.Scatter(x=df['Date'], y=df[df.columns[1]], name=df.columns[1],line=dict(color='#095DBA', width=2)),
+    #     secondary_y=False,
+    # )
+
+    # fig.add_trace(
+    #     go.Scatter(x=df['Date'], y=df[df.columns[2]], name=df.columns[2],line=dict(color='#FF4B4A', width=2),),
+    #     secondary_y=True,
+    # )
+
+    # fig.update_layout(
+    #     title_text=f"Corellation entre {df.columns[1]} et {df.columns[2]}",
+    #     title_x=0.3,
+    #     height=600,
+        
+    # )
+
+    # fig.update_xaxes(title_text="Date")
+
+    # fig.update_yaxes(title_text=df.columns[1], secondary_y=False)
+    # fig.update_yaxes(title_text=df.columns[2], secondary_y=True)
+
+    # st.plotly_chart(fig, use_container_width=True)
+
+ 
+
