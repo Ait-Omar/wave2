@@ -389,7 +389,8 @@ elif option == ['Laboratoir', 'Chantier']:
 
 #   Barre latérale pour la sélection de la phase
     st.sidebar.header("Chantier")
-    don1 = st.sidebar.radio("Phases de traitement :", sheet_names1)
+    don1 = st.sidebar.selectbox("Phases de traitement :", sheet_names1)
+
     df1=  pd.read_excel('suivi 3h standart DIPS.xlsx', sheet_name=don1)
 
     excel_file2 = pd.ExcelFile('suivi qualité.xlsx')
@@ -397,7 +398,7 @@ elif option == ['Laboratoir', 'Chantier']:
   
 #   Barre latérale pour la sélection de la phase
     st.sidebar.header("Laboratoire")
-    don2 = st.sidebar.radio("Phases de traitement :", sheet_names2)
+    don2 = st.sidebar.selectbox("Phases de traitement :", sheet_names2)
     df2 = transform_laboratory_data('suivi qualité.xlsx', sheet_name=don2)
     # df2=  pd.read_excel('suivi qualité.xlsx', sheet_name=don2)
 
