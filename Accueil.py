@@ -15,7 +15,14 @@ st.set_page_config(
     page_icon="🌊", 
     layout="wide"
 )
-
+st.markdown(
+    """
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600&display=swap" rel="stylesheet">
+    </head>
+    """,
+    unsafe_allow_html=True
+)
 # Fonction pour convertir une image en base64
 def image_to_base64(image_path):
     img = Image.open(image_path)
@@ -36,13 +43,13 @@ st.markdown(
             background-color: #f7f9fc;
         }
         h1 {
-            font-family: 'Arial', sans-serif;
+            font-family: Jost;
             color: #2c3e50;
             font-size: 48px;
             animation: fadeIn 2s ease-in-out;
         }
         h2, h3 {
-            font-family: 'Arial', sans-serif;
+            font-family: Jost;
             color: #34495e;
             animation: slideIn 1s ease-in-out;
         }
@@ -128,7 +135,7 @@ st.markdown(
 # Points clés
 st.markdown(
     """
-    <h3>🚀 Ce que vous trouverez sur cette interface :</h3>
+    <h3>Ce que vous trouverez sur cette interface :</h3>
     <ul>
         <li>Suivi en temps réel des performances opérationnelles (débits, consommation énergétique, etc.).</li>
         <li>Données historiques et analyses pour comprendre les tendances de production.</li>
@@ -141,7 +148,7 @@ st.markdown(
 # Objectifs de la station
 st.markdown(
     """
-    <h3>🌍 Mission de Wave 2</h3>
+    <h3>Mission de Wave 2</h3>
     <p>- Fournir une solution durable au stress hydrique dans la région.</p>
     <p>- Répondre aux besoins en eau potable des zones avoisinantes, notamment Casablanca et El Jadida.</p>
     <p>- Minimiser l'impact environnemental grâce à des technologies avancées.</p>
