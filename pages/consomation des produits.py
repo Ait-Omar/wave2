@@ -13,6 +13,14 @@ st.set_page_config(
     page_icon="📊",
     layout="wide"
 )
+st.markdown(
+    """
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600&display=swap" rel="stylesheet">
+    </head>
+    """,
+    unsafe_allow_html=True
+)
 
 # CSS pour le style et les animations
 st.markdown(
@@ -64,7 +72,7 @@ st.markdown(
 
 # Titre principal
 st.markdown(
-    "<h1 style='text-align: center;'>Consommation Spécifique - Analyse</h1>", 
+    "<h1 style='text-align: center;font-family:Jost;'>Consommation Spécifique - Analyse</h1>", 
     unsafe_allow_html=True
 )
 
@@ -75,22 +83,35 @@ if c=='Consommation spécifique':
 elif c=='Consommation Journalière':
     df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='C Prouits chimiques')
 # Préparation des données
-df['date'] = pd.to_datetime(df['date'])
-df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format 'dd/mm/yyyy'
+# df['date'] = pd.to_datetime(df['date'])
+# df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format 'dd/mm/yyyy'
 
-# Définir les dates de début et de fin
-startDate = pd.to_datetime(df["date"], format='%d/%m/%Y').min()
-endDate = pd.to_datetime(df["date"], format='%d/%m/%Y').max()
+# # Définir les dates de début et de fin
+# startDate = pd.to_datetime(df["date"], format='%d/%m/%Y').min()
+# endDate = pd.to_datetime(df["date"], format='%d/%m/%Y').max()
 
-# Sélection des dates dans la barre latérale
+# # Sélection des dates dans la barre latérale
+# st.sidebar.subheader("Filtrer par période")
+# date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
+# date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
+
+# # Filtrer les données par plage de dates
+# df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
+# df = df[(df["date"] >= date1) & (df["date"] <= date2)]
+# df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
+df['date'] = pd.to_datetime(df['date'], errors='coerce')
+
+# Define the start and end dates for filtering
+startDate = df['date'].min()
+endDate = df['date'].max()
+
+# Sidebar for date range selection
 st.sidebar.subheader("Filtrer par période")
 date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
 date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
 
-# Filtrer les données par plage de dates
-df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
+# Filter the data by date range
 df = df[(df["date"] >= date1) & (df["date"] <= date2)]
-df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
 
 # Sélection du paramètre
 st.sidebar.markdown("<h2 style='text-align: center;'>Sélectionnez un paramètre :</h2>", unsafe_allow_html=True)
@@ -132,7 +153,7 @@ def consomation(df, param):
             <h2 style="
             text-align: center; 
             color: #4A90E2; 
-            font-family: Arial, sans-serif; 
+            font-family: Jost; 
             margin-bottom: 0;">
             Consommation journalière : {np.around(df[param].iloc[-1],3)}
             </h2>
@@ -140,10 +161,6 @@ def consomation(df, param):
         """, 
         unsafe_allow_html=True
     )
-
-
-
-
 
     fig = px.line(
         df,
@@ -155,27 +172,30 @@ def consomation(df, param):
     )
 
     # Mise en forme avancée du graphique
+    
     fig.update_layout(
         title=dict(
             text=f"Évolution de {param.capitalize()} Pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
-            font=dict(size=20),  # Taille du titre
-            x=0.5,  # Centrer le titre
+            font=dict(size=15, weight='bold',family='Jost'),
+            x=0.5, 
             xanchor="center"
         ),
-        font=dict(size=14),  # Taille de la police pour le reste du graphique
+        font=dict(size=14),
         xaxis=dict(
-            title=dict(text="Date", font=dict(size=16)),  # Titre de l'axe X
-            tickangle=-45,  # Inclinaison des étiquettes de l'axe X pour une meilleure lisibilité
-            # showgrid=True,  # Afficher une grille verticale
-            showticklabels=True  # Masquer les étiquettes de l'axe X
+            title=dict(text="Date", font=dict(size=16, weight='bold')),
+            tickangle=-0,
+            showticklabels=True,
+            tickformat="%d",  # Display date in 'dd/mm/yyyy' format
+            tickfont=dict(size=20, color='black',family='Jost', weight='bold')
         ),
         yaxis=dict(
-            title=dict(text="Valeur", font=dict(size=16)),  # Titre de l'axe Y
-            # showgrid=True  # Afficher une grille horizontale
+            title=dict(text="Valeur", font=dict(size=16, weight='bold')),
+            tickfont=dict(size=20, weight='bold')
         ),
-        margin=dict(l=40, r=40, t=60, b=40),  # Marges autour du graphique
-        height=500,  # Hauteur du graphique
+        margin=dict(l=40, r=40, t=60, b=40),
+        height=500
     )
+
 
     # Tracé plus épais pour la ligne
     fig.update_traces(

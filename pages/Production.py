@@ -12,6 +12,14 @@ st.set_page_config(
     page_icon="📊",
     layout="wide"
 )
+st.markdown(
+        """
+        <head>
+            <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600&display=swap" rel="stylesheet">
+        </head>
+        """,
+        unsafe_allow_html=True
+    )
 
 # Titre et description
 st.title("Production - Station Wave 2")
@@ -20,7 +28,7 @@ st.markdown(
     <div style="
         text-align: justify; 
         color: #333333; 
-        font-family: Arial, sans-serif; 
+        font-family: Jost; 
         line-height: 1.6; 
         border-left: 4px solid #4A90E2; 
         padding-left: 10px;
@@ -42,24 +50,39 @@ except FileNotFoundError:
     st.stop()
 
 # Préparation des données
+# df['date'] = pd.to_datetime(df['date'], errors='coerce')
+# df.dropna(subset=['date'], inplace=True)
+# df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format 'dd/mm/yyyy'
+
+# # Définition des dates minimales et maximales
+# startDate = pd.to_datetime(df["date"], format='%d/%m/%Y').min()
+# endDate = pd.to_datetime(df["date"], format='%d/%m/%Y').max()
+
+# # Barre latérale de sélection
+# st.sidebar.header("🔍 Options de Filtrage")
+# st.sidebar.subheader("📅 Filtrer par période")
+# date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
+# date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
+
+# # Filtrage des données par plage de dates
+# df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
+# df = df[(df["date"] >= date1) & (df["date"] <= date2)]
+# df['date'] = df['date'].dt.strftime('%d/%m/%Y')
 df['date'] = pd.to_datetime(df['date'], errors='coerce')
 df.dropna(subset=['date'], inplace=True)
-df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format 'dd/mm/yyyy'
 
-# Définition des dates minimales et maximales
-startDate = pd.to_datetime(df["date"], format='%d/%m/%Y').min()
-endDate = pd.to_datetime(df["date"], format='%d/%m/%Y').max()
+# Define the date range for filtering
+startDate = df['date'].min()
+endDate = df['date'].max()
 
-# Barre latérale de sélection
+# Sidebar for date range selection
 st.sidebar.header("🔍 Options de Filtrage")
 st.sidebar.subheader("📅 Filtrer par période")
 date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
 date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
 
-# Filtrage des données par plage de dates
-df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
+# Filter the DataFrame based on the selected date range
 df = df[(df["date"] >= date1) & (df["date"] <= date2)]
-df['date'] = df['date'].dt.strftime('%d/%m/%Y')
 
 # Sélection du paramètre à visualiser
 st.sidebar.subheader("🚄 Sélection du Train de Production")
@@ -105,7 +128,7 @@ if param != "total production ":
             <h3 style="
                 text-align: center; 
                 color: #4A90E2; 
-                font-family: Arial, sans-serif; 
+                font-family: Jost; 
                 margin-bottom: 0;
             ">
                 Réalisé : {df[param].iloc[-1]} m³
@@ -130,7 +153,7 @@ if param != "total production ":
             <h3 style="
                 text-align: center; 
                 color: #4A90E2; 
-                font-family: Arial, sans-serif; 
+                font-family: Jost; 
                 margin-bottom: 0;
             ">
                 Prévue : 15000 m³
@@ -155,7 +178,7 @@ if param != "total production ":
             <h3 style="
                 text-align: center; 
                 color: #4A90E2; 
-                font-family: Arial, sans-serif; 
+                font-family: Jost; 
                 margin-bottom: 0;
             ">
                 Ecart: {np.round(df[param].iloc[-1]-15000,2)} m³
@@ -180,7 +203,7 @@ if param != "total production ":
             <h3 style="
                 text-align: center; 
                 color: #4A90E2; 
-                font-family: Arial, sans-serif; 
+                font-family: Jost; 
                 margin-bottom: 0;
             ">
                 Taux: {np.round(df[param].iloc[-1]/15000*100,2)} %
@@ -191,13 +214,45 @@ if param != "total production ":
     )
 
     # Personnalisation du graphique avec un style moderne
+    # fig = px.line(
+    #     df,
+    #     x="date",
+    #     y=param,
+    #     title=f"Évolution de {param.capitalize()} au fil du temps",
+    #     labels={
+    #         "dete": "date",
+    #         param: param.capitalize()
+    #     },
+    #     template="plotly_white",  # Thème moderne
+    # )
+
+    # # Options pour améliorer le design
+    # fig.update_traces(line=dict(width=2))  # Épaisseur des lignes
+    # fig.update_layout(
+    #     title=dict(
+    #         text=f"Évolution de la Production pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
+    #         font=dict(size=20),
+    #         x=0.5,
+    #         xanchor="center"
+    #     ),
+    #     xaxis=dict(
+    #         title_text="",
+    #         tickangle=-45,
+    #         showticklabels=True  # Hide the date labels on the x-axis
+    #     ),
+    #     yaxis=dict(title_text=f"{param.capitalize()}"),
+    #    margin=dict(l=40, r=40, t=60, b=40),
+    #     height=400,
+    # )
+    
+
     fig = px.line(
         df,
         x="date",
         y=param,
         title=f"Évolution de {param.capitalize()} au fil du temps",
         labels={
-            "dete": "date",
+            "date": "date",
             param: param.capitalize()
         },
         template="plotly_white",  # Thème moderne
@@ -208,19 +263,22 @@ if param != "total production ":
     fig.update_layout(
         title=dict(
             text=f"Évolution de la Production pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
-            font=dict(size=20),
+            font=dict(size=20,family='Jost'),
             x=0.5,
             xanchor="center"
         ),
         xaxis=dict(
             title_text="",
-            tickangle=-45,
-            showticklabels=True  # Hide the date labels on the x-axis
+            tickangle=-0,
+            showticklabels=True,  # Affiche les dates sur l'axe x
+            tickformat="%d",  # Affiche uniquement le jour du mois
+            tickfont=dict(size=20, color='black',family='Jost', weight='bold')  # Agrandir et colorier les labels de date
         ),
         yaxis=dict(title_text=f"{param.capitalize()}"),
-       margin=dict(l=40, r=40, t=60, b=40),
+        margin=dict(l=40, r=40, t=60, b=40),
         height=400,
     )
+
 
 
     # Affichage du graphique
@@ -242,7 +300,7 @@ else:
             <h3 style="
                 text-align: center; 
                 color: #4A90E2; 
-                font-family: Arial, sans-serif; 
+                font-family: Jost; 
                 margin-bottom: 0;
             ">
                 Réalisé: {df[param].iloc[-1]} m³
@@ -267,7 +325,7 @@ else:
             <h3 style="
                 text-align: center; 
                 color: #4A90E2; 
-                font-family: Arial, sans-serif; 
+                font-family:Jost; 
                 margin-bottom: 0;
             ">
                Prévue: 120000 m³
@@ -292,7 +350,7 @@ else:
             <h3 style="
                 text-align: center; 
                 color: #4A90E2; 
-                font-family: Arial, sans-serif; 
+                font-family: Jost; 
                 margin-bottom: 0;
             ">
                 Ecart: {np.round(df[param].iloc[-1]-120000,2)} m³
@@ -317,7 +375,7 @@ else:
             <h3 style="
                 text-align: center; 
                 color: #4A90E2; 
-                font-family: Arial, sans-serif; 
+                font-family:Jost; 
                 margin-bottom: 0;
             ">
                 Taux: {np.round(df[param].iloc[-1]/120000*100,2)} %
@@ -345,7 +403,7 @@ else:
     fig.update_layout(
         title=dict(
             text=f"Évolution de la Production pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
-            font=dict(size=20),
+            font=dict(size=20,family='Jost'),
             x=0.5,
             xanchor="center"
         ),
@@ -353,6 +411,7 @@ else:
             title_text="",
             tickangle=-45,
             showticklabels=True  # Hide the date labels on the x-axis
+            
         ),
         yaxis=dict(title_text=f"{param.capitalize()}"),
         margin=dict(l=50, r=50, t=60, b=40),
