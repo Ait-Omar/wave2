@@ -24,11 +24,34 @@ st.markdown(
 st.markdown(
     """
     <style>
-        body {
-            background-color: #f7f9fc;
+        body, .stApp {
+            background-color: #FAF7F0;
+        }
+        section[data-testid="stSidebar"] button {
+            background-color: #F9F9F9;
+            border: 1px solid #D1D1D1;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+            color: #4A90E2;
+            font-family: 'Jost';
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        section[data-testid="stSidebar"] button:hover {
+            background-color: #e6e6e6;
+            color: #4A90E2;
+        }
+       body {
+            background-color: #FAF7F0;
         }
         h2 {
-            font-family: 'Arial', sans-serif;
+            font-family: Jost;
             color: #34495e;
             animation: slideIn 1s ease-in-out;
         }
@@ -174,84 +197,43 @@ def consomation_energie(df, param):
         labels={"date": "Date", param: param.capitalize()},
         template="plotly_white"
     )
+
     fig.update_layout(
         title=dict(
             text=f"Évolution de {param.capitalize()} Pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
-            font=dict(size=20,family='Jost'),  # Taille du titre
-            x=0.5,  # Centrer le titre
+            font=dict(size=20, family='Jost'),
+            x=0.5,
             xanchor="center"
         ),
-        font=dict(size=14),  # Taille de la police pour le reste du graphique
+        font=dict(size=14),
         xaxis=dict(
-            title=dict(text="Date", font=dict(size=16)),  # Titre de l'axe X
-            tickangle=-45,  # Inclinaison des étiquettes de l'axe X pour une meilleure lisibilité
-            # showgrid=True ,# Afficher une grille verticale
-            showticklabels=True
-
-        ),
+        title=dict(text="Date", font=dict(size=16)),
+        tickangle=0,
+        showgrid=False,
+        showticklabels=True,
+        tickformat="%d",  # ✅ Only the day of the month (e.g., 01, 15, 30)
+        tickfont=dict(size=20, color='black', family='Jost', weight='bold'),
+         ),
         yaxis=dict(
-            title=dict(text="Valeur", font=dict(size=16)),  # Titre de l'axe Y
-            # showgrid=True  # Afficher une grille horizontale
+            title=dict(text="Valeur", font=dict(size=16)),
+            showgrid=False  # ❌ No horizontal grid lines
         ),
-        margin=dict(l=40, r=40, t=60, b=40),  # Marges autour du graphique
-        height=500,  # Hauteur du graphique
+        margin=dict(l=40, r=40, t=60, b=40),
+        height=500,
     )
+
     st.plotly_chart(fig, use_container_width=True)
 
+
     # Analyse de la distribution
-#     st.markdown(
-#         "<h3 style='text-align: center; color: #4A90E2;'>Distribution des Paramètres</h3>", 
-#         unsafe_allow_html=True
-#     )
-
-#     fig_hist = px.histogram(
-#         df, 
-#         x=param, 
-#         title=f"Distribution de {param.capitalize()}",
-#         labels={param: param.capitalize()},
-#         nbins=20, 
-#         template="plotly_white"
-#     )
-#     fig_hist.update_layout(
-#         title_x=0.5,  # Centrer le titre du graphique
-#         height=500,
-#         margin=dict(l=40, r=40, t=60, b=40)
-#     )
-#     st.plotly_chart(fig_hist, use_container_width=True)
-
-#     # Statistiques descriptives
-#     if param:
-#         stats = df[param].describe()
-
-#         # Créer un DataFrame propre pour les statistiques descriptives
-#         stats_clean = pd.DataFrame({
-#             "Statistique": ["Moyenne", "Médiane", "Min", "Max", "Écart-type", "1er Quartile", "3e Quartile"],
-#             "Valeur": [
-#                 round(stats["mean"], 2),
-#                 round(stats["50%"], 2),
-#                 round(stats["min"], 2),
-#                 round(stats["max"], 2),
-#                 round(stats["std"], 2),
-#                 round(stats["25%"], 2),
-#                 round(stats["75%"], 2),
-#             ]
-#         })
-
-#         # Affichage des statistiques descriptives
-#         st.markdown(
-#             f"<h3 style='text-align: center; color: #4A90E2;'>Statistiques Descriptives pour {param.capitalize()}</h3>",
-#             unsafe_allow_html=True
-#         )
-#         st.table(stats_clean)
-
-
-consomation_energie(df, param)
+if st.sidebar.button('Apply'):
+    consomation_energie(df, param)
 
 st.markdown(
     """
     <div class="footer">
-        © 2025 Station de Dessalement Wave 2 - Analyse Énergie
+        © 2025 Station de Dessalement Wave 2 - Jorf Lasfar | Interface développée par DIPS
     </div>
-    """, 
+    """,
     unsafe_allow_html=True
 )

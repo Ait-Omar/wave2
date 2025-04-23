@@ -39,8 +39,8 @@ logo_base641 = image_to_base64(logo_path1)
 st.markdown(
     """
     <style>
-        body {
-            background-color: #f7f9fc;
+       body, .stApp {
+        background-color: #FAF7F0;
         }
         h1 {
             font-family: Jost;

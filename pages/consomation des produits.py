@@ -26,11 +26,34 @@ st.markdown(
 st.markdown(
     """
     <style>
+            body, .stApp {
+                background-color: #FAF7F0;
+            }
+            section[data-testid="stSidebar"] button {
+            background-color: #F9F9F9;
+            border: 1px solid #D1D1D1;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+            color: #4A90E2;
+            font-family: 'Jost', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        section[data-testid="stSidebar"] button:hover {
+            background-color: #e6e6e6;
+            color: #4A90E2;
+        }
         body {
-            background-color: #f7f9fc;
+            background-color: #FAF7F0;
         }
         h1, h2, h3 {
-            font-family: 'Arial', sans-serif;
+            font-family: Jost;
             color: #2c3e50;
             animation: fadeIn 2s ease-in-out;
         }
@@ -82,23 +105,7 @@ if c=='Consommation spécifique':
     df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='CS Produits chimiques')
 elif c=='Consommation Journalière':
     df = pd.read_excel('Consommation spécifique.xlsx', sheet_name='C Prouits chimiques')
-# Préparation des données
-# df['date'] = pd.to_datetime(df['date'])
-# df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format 'dd/mm/yyyy'
 
-# # Définir les dates de début et de fin
-# startDate = pd.to_datetime(df["date"], format='%d/%m/%Y').min()
-# endDate = pd.to_datetime(df["date"], format='%d/%m/%Y').max()
-
-# # Sélection des dates dans la barre latérale
-# st.sidebar.subheader("Filtrer par période")
-# date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
-# date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
-
-# # Filtrer les données par plage de dates
-# df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
-# df = df[(df["date"] >= date1) & (df["date"] <= date2)]
-# df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
 df['date'] = pd.to_datetime(df['date'], errors='coerce')
 
 # Define the start and end dates for filtering
@@ -176,25 +183,28 @@ def consomation(df, param):
     fig.update_layout(
         title=dict(
             text=f"Évolution de {param.capitalize()} Pendant {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}",
-            font=dict(size=15, weight='bold',family='Jost'),
-            x=0.5, 
+            font=dict(size=15, weight='bold', family='Jost'),
+            x=0.5,
             xanchor="center"
         ),
         font=dict(size=14),
         xaxis=dict(
             title=dict(text="Date", font=dict(size=16, weight='bold')),
-            tickangle=-0,
+            tickangle=0,
             showticklabels=True,
             tickformat="%d",  # Display date in 'dd/mm/yyyy' format
-            tickfont=dict(size=20, color='black',family='Jost', weight='bold')
+            tickfont=dict(size=20, color='black', family='Jost', weight='bold'),
+            showgrid=False  # ❌ Removes vertical grid lines
         ),
         yaxis=dict(
             title=dict(text="Valeur", font=dict(size=16, weight='bold')),
-            tickfont=dict(size=20, weight='bold')
+            tickfont=dict(size=20, weight='bold'),
+            showgrid=False  # ✅ Removes horizontal grid lines
         ),
         margin=dict(l=40, r=40, t=60, b=40),
         height=500
-    )
+)
+
 
 
     # Tracé plus épais pour la ligne
@@ -206,8 +216,7 @@ def consomation(df, param):
     # Affichage du graphique dans Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-# Appel de la fonction avec le paramètre sélectionné
-if param:
+if st.sidebar.button('Apply'):
     consomation(df, param)
 
 # Footer
