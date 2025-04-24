@@ -34,7 +34,43 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+st.markdown("""
+    <style>
+            body, .stApp {
+        background-color: #FAF7F0;
+    }
+                /* Target all buttons in the sidebar */
+    section[data-testid="stSidebar"] button {
+        background-color: #F9F9F9;
+        border: 1px solid #D1D1D1;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+        color: #4A90E2;
+        font-family: 'Jost', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
 
+    section[data-testid="stSidebar"] button:hover {
+        background-color: #e6e6e6;
+        color: #4A90E2;
+    }
+            .footer {
+            font-size: 14px;
+            color: #7f8c8d;
+            text-align: center;
+            padding-top: 40px;
+            padding-bottom: 20px;
+            body {
+        background-color: #FAF7F0;
+        }
+    </style>
+""", unsafe_allow_html=True)
 # Chargement des données
 sheets = ["SELF CLEANING", "UF", "RO-A", "RO-B", "RO-C", "RO-D"]
 data = {}
@@ -84,50 +120,50 @@ param = st.sidebar.selectbox(
     'Paramètre', 
     df.columns[2:],
     help="Choisissez un paramètre à afficher parmi les colonnes disponibles."
-)
+    )
+if st.sidebar.button('Apply'):
+    # Style pour le titre de la phase
+    st.markdown(
+        f"""
+        <h2 style="
+            text-align: center; 
+            color: #4A90E2; 
+            font-family: Arial, sans-serif; 
+            margin-bottom: 10px;
+        ">
+            Phase de traitement : {don}
+        </h2>
+        """,
+        unsafe_allow_html=True
+    )
 
-# Style pour le titre de la phase
-st.markdown(
-    f"""
-    <h2 style="
-        text-align: center; 
-        color: #4A90E2; 
-        font-family: Arial, sans-serif; 
-        margin-bottom: 10px;
-    ">
-        Phase de traitement : {don}
-    </h2>
-    """,
-    unsafe_allow_html=True
-)
+    # Période formatée avec un style professionnel
+    st.markdown(
+        f"""
+        <h4 style="
+            text-align: center; 
+            color: #333333; 
+            font-family: Arial, sans-serif; 
+            margin-top: 5px;
+        ">
+            Période : {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}
+        </h4>
+        """,
+        unsafe_allow_html=True
+    )
 
-# Période formatée avec un style professionnel
-st.markdown(
-    f"""
-    <h4 style="
-        text-align: center; 
-        color: #333333; 
-        font-family: Arial, sans-serif; 
-        margin-top: 5px;
-    ">
-        Période : {date1.strftime('%d/%m/%Y')} - {date2.strftime('%d/%m/%Y')}
-    </h4>
-    """,
-    unsafe_allow_html=True
-)
+    st.markdown(
+        f"""
+        <h3 style="
+            text-align: center; 
+            color: #4A90E2; 
+            font-family: Arial, sans-serif; 
+            margin-bottom: 20px;
+        ">
+            Visualisation de {param.capitalize()}
+        </h3>
+        """,
+        unsafe_allow_html=True
+    )
 
-st.markdown(
-    f"""
-    <h3 style="
-        text-align: center; 
-        color: #4A90E2; 
-        font-family: Arial, sans-serif; 
-        margin-bottom: 20px;
-    ">
-        Visualisation de {param.capitalize()}
-    </h3>
-    """,
-    unsafe_allow_html=True
-)
-
-visualise(df, param)
+    visualise(df, param)
