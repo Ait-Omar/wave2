@@ -26,9 +26,9 @@ st.markdown(
 st.markdown(
     """
     <style>
-            body, .stApp {
-                background-color: #FAF7F0;
-            }
+    body, .stApp {
+        background-color: #FAF7F0;
+        }
             section[data-testid="stSidebar"] button {
             background-color: #F9F9F9;
             border: 1px solid #D1D1D1;

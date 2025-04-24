@@ -115,7 +115,12 @@ else:
 # Affichage des informations sélectionnées
 
 if st.sidebar.button('Apply'):
-    st.markdown(
+    df.replace(['wbw','soak ceb1','w-f','f','F','w-bw','WBW','W.BW','W,BW','ceb1','CEB2','bw','wf','wb','W-F','W.F','hs','WF','wB','BW','w,b','W,F','W-BW','ceb2','SOAK CEB1','W,B','CEB1','SOAK CEB2','HS',
+                ], 
+               np.nan, inplace=True)
+    
+    if param != "total production ":
+        st.markdown(
         f"""
         <h2 style="
             text-align: center; 
@@ -128,12 +133,7 @@ if st.sidebar.button('Apply'):
         """,
         unsafe_allow_html=True
     )
-
-    df.replace(['wbw','soak ceb1','w-f','f','F','w-bw','WBW','W.BW','W,BW','ceb1','CEB2','bw','wf','wb','W-F','W.F','hs','WF','wB','BW','w,b','W,F','W-BW','ceb2','SOAK CEB1','W,B','CEB1','SOAK CEB2','HS',
-                ], 
-               np.nan, inplace=True)
-    col1,col2,col3,col4 = st.columns((4))
-    if param != "total production ":
+        col1,col2,col3,col4 = st.columns((4))
         with col1:
             st.markdown(
             f"""
@@ -290,6 +290,7 @@ if st.sidebar.button('Apply'):
         # Affichage du graphique
         st.plotly_chart(fig, use_container_width=True)
     else:
+        col1,col2,col3,col4 = st.columns((4))
         with col1:
             st.markdown(
             f"""

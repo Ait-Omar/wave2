@@ -27,30 +27,63 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("Analyse Comparative")
 st.markdown(
     """
-    <div style="
-        body, .stApp {
-        background-color: #FAF7F0;
-        }
-        text-align: justify; 
-        color: #333333; 
-        font-family: Jost; 
-        line-height: 1.6; 
-        border-left: 4px solid #4A90E2; 
-        padding-left: 10px;
-        margin-bottom: 20px;
-        body {
-            background-color: #FAF7F0;
-        }
-    ">
+    <h1 style='text-align: center; 
+               font-family: "Jost", sans-serif; 
+               font-weight: 600;
+               font-size: 42px;
+               margin-bottom: 30px;'>
+        Analyse Comparative
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
+st.markdown(
+    """
+    <div style=' text-align: justify; 
+#         color: #333333; 
+#         font-family: Jost; 
+#         line-height: 1.6; 
+#         border-left: 4px solid #4A90E2; 
+#         padding-left: 10px;
+#         margin-bottom: 20px;'
+#        >
         <strong>Explorez les données de performance</strong> des différentes phases de traitement de la station de dessalement <strong>Wave 2</strong>. 
-        Sélectionnez une phase, définissez une période et visualisez les paramètres clés pour mieux comprendre et analyser le processus.
+         Sélectionnez une phase, définissez une période et visualisez les paramètres clés pour mieux comprendre et analyser le processus.
     </div>
     """,
     unsafe_allow_html=True
 )
+
+# st.markdown(
+#     """
+#     <div style="
+
+#         text-align: justify; 
+#         color: #333333; 
+#         font-family: Jost; 
+#         line-height: 1.6; 
+#         border-left: 4px solid #4A90E2; 
+#         padding-left: 10px;
+#         margin-bottom: 20px;
+#         body {
+#             background-color: #FAF7F0;
+#         }
+#     ">
+#         <strong>Explorez les données de performance</strong> des différentes phases de traitement de la station de dessalement <strong>Wave 2</strong>. 
+#         Sélectionnez une phase, définissez une période et visualisez les paramètres clés pour mieux comprendre et analyser le processus.
+#     </div>
+#     """,
+#     unsafe_allow_html=True
+# )
+st.markdown("""
+    <style>
+            body, .stApp {
+        background-color: #FAF7F0;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 option = st.sidebar.multiselect("Options",['Laboratoir','Scada','Chantier'])
 
@@ -511,124 +544,77 @@ elif option == ['Laboratoir', 'Chantier']:
     )
 
     st.plotly_chart(fig, use_container_width=True)
-# elif option ==['Laboratoir','Scada']:
-#     excel_file1 = pd.ExcelFile('SUIVI STANDART DIPS.xlsx')
-#     sheet_names1 = excel_file1.sheet_names[1:]
+elif option == ['Laboratoir', 'Scada']:
+    excel_file1 = pd.ExcelFile('SUIVI STANDART DIPS.xlsx')
+    sheet_names1 = excel_file1.sheet_names[1:]
 
-# #   Barre latérale pour la sélection de la phase
-#     st.sidebar.header("Chantier")
-#     don1 = st.sidebar.selectbox("Phases de traitement :", sheet_names1)
+    st.sidebar.header("Scada")
+    don1 = st.sidebar.selectbox("Phases de traitement (Scada):", sheet_names1)
 
-#     df1=  pd.read_excel('suivi 3h standart DIPS.xlsx', sheet_name=don1)
+    df1 = pd.read_excel('SUIVI STANDART DIPS.xlsx', sheet_name=don1)
 
-#     excel_file2 = pd.ExcelFile('suivi qualité.xlsx')
-#     sheet_names2 = excel_file2.sheet_names[1:]
-  
-# #   Barre latérale pour la sélection de la phase
-#     st.sidebar.header("Laboratoire")
-#     don2 = st.sidebar.selectbox("Phases de traitement :", sheet_names2)
-#     df2 = transform_laboratory_data('suivi qualité.xlsx', sheet_name=don2)
-#     # df2=  pd.read_excel('suivi qualité.xlsx', sheet_name=don2)
+    excel_file2 = pd.ExcelFile('suivi qualité.xlsx')
+    sheet_names2 = excel_file2.sheet_names[1:]
 
-#     startDate = pd.to_datetime(df1["date"], format='%d/%m/%Y').min()
-#     endDate = pd.to_datetime(df1["date"], format='%d/%m/%Y').max()
+    st.sidebar.header("Laboratoire")
+    don2 = st.sidebar.selectbox("Phases de traitement (Laboratoire):", sheet_names2)
+    df2 = transform_laboratory_data('suivi qualité.xlsx', sheet_name=don2)
 
-#     st.sidebar.subheader("Filtrer par période")
-#     date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
-#     date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
+    # Définir les bornes de date
+    startDate = pd.to_datetime(df1["date"], format='%d/%m/%Y').min()
+    endDate = pd.to_datetime(df1["date"], format='%d/%m/%Y').max()
 
-#     df1['date'] = pd.to_datetime(df1['date'], format='%d/%m/%Y')
-#     df1 = df1[(df1["date"] >= date1) & (df1["date"] <= date2)]
-#     df1['date'] = df1['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
- 
-#     st.sidebar.markdown(
-#         """
-#         <h3 style="
-#             color: #4A90E2; 
-#             font-family: Jost; 
-#             margin-bottom: 15px;
-#         ">
-#             Sélectionnez un paramètre
-#         </h3>
-#         """,
-#         unsafe_allow_html=True
-#     )
+    st.sidebar.subheader("Filtrer par période")
+    date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
+    date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
 
-#     # Sélection du paramètre à visualiser
-#     param1 = st.sidebar.selectbox(
-#         'Paramètre', 
-#          [col for col in df1.columns if col not in ['date', 'Heur']] ,
-#         help="Choisissez un paramètre à afficher parmi les colonnes disponibles."
-#     )
-#     param2 = st.sidebar.selectbox(
-#         'Paramètre', 
-#         [col for col in df2.columns if col not in ['date', 'point', 'poste', 'source']],
-#         help="Choisissez un paramètre à afficher parmi les colonnes disponibles."
-#     )
+    df1['date'] = pd.to_datetime(df1['date'], format='%d/%m/%Y')
+    df1 = df1[(df1["date"] >= date1) & (df1["date"] <= date2)]
+    df1['date'] = df1['date'].dt.strftime('%d/%m/%Y')
 
+    st.sidebar.markdown("<h3 style='color: #4A90E2;'>Sélectionnez un paramètre</h3>", unsafe_allow_html=True)
 
-#         # df['Date'] = df['date'].astype(str)
-#     df1[param1] = df1[param1].astype(str).str.replace(',', '.')
-#     df1.replace(['-'], np.nan, inplace=True)
-#     df1[param1] = pd.to_numeric(df1[param1], errors='coerce')
-#     df1['Date'] = df1['date'].astype(str) + " " + df1['Heur'].astype(str)
+    param1 = st.sidebar.selectbox('Paramètre Scada', [col for col in df1.columns if col not in ['date', 'poste']])
+    param2 = st.sidebar.selectbox('Paramètre Laboratoire', [col for col in df2.columns if col not in ['date', 'point', 'poste', 'source']])
 
+    # Nettoyage Scada
+    df1[param1] = df1[param1].astype(str).str.replace(',', '.')
+    df1.replace(['-'], np.nan, inplace=True)
+    df1[param1] = pd.to_numeric(df1[param1], errors='coerce')
+    df1['Date'] = pd.to_datetime(df1['date'], format='%d/%m/%Y', errors='coerce')
+    # df1['Date'] = df1['date']
 
-#     df2.replace(0, np.nan, inplace=True)
-#     df2.replace('/', np.nan, inplace=True)
-#     df2.replace('-', np.nan, inplace=True)
-#     df2.replace('CIP', np.nan, inplace=True)
-#     df2.replace('erroné', np.nan, inplace=True)
-#     df2.replace('en cours', np.nan, inplace=True)
-#     df = {
-#     'Date': df1['Date'],
-#     param1: pd.to_numeric(df1[param1], errors='coerce'),
-#     param2: pd.to_numeric(df2[param2], errors='coerce')
-#     }
-#     df = pd.DataFrame(df)
+    # Nettoyage Labo
+    df2.replace([0, '/', '-', 'CIP', 'erroné', 'en cours'], np.nan, inplace=True)
+    df2[param2] = pd.to_numeric(df2[param2], errors='coerce')
+    df2['Date'] = pd.to_datetime(df2['date'], format='%d/%m/%Y', errors='coerce')
+    # df2['Date'] = df2['date']
 
-#     # Melt for long-form to control styling better
-#     df_melted = df.melt(id_vars='Date', var_name='Parameter', value_name='Value')
+    # Jointure intelligente par date
+    df = pd.merge(df1[['Date', param1]], df2[['Date', param2]], on='Date', how='inner')
 
-#     # Title
-#     st.markdown(f"<h3 style='text-align: center;font-family:Jost;'>Corrélation entre {param1} de {don1} et {param2} de {don2}</h3>", unsafe_allow_html=True)
+    df_melted = df.melt(id_vars='Date', var_name='Parameter', value_name='Value')
 
-#     fig = px.line(
-#     df_melted,
-#     x="Date",
-#     y="Value",
-#     color='Parameter',
-#     color_discrete_sequence=['#1f77b4', '#ff7f0e']
-# )
+    st.markdown(f"<h3 style='text-align: center;font-family:Jost;'>Corrélation entre {param1} (Scada) et {param2} (Laboratoire)</h3>", unsafe_allow_html=True)
 
-#     fig.update_layout(
-#         font=dict(family="Jost", size=14),
-#         legend=dict(
-#             title="",
-#             orientation="h",
-#             yanchor="bottom",
-#             y=1.02,
-#             xanchor="right",
-#             x=1
-#         ),
-#         xaxis=dict(
-#             title="Date",
-#             tickformat="%d/%m",  # Only show day/month
-#             tickangle=0,
-#             nticks=10,  # Limit number of ticks shown
-#             showgrid=False
-#         ),
-#         yaxis=dict(
-#             title="Valeur",
-#             showgrid=True,
-#             gridcolor="lightgrey"
-#         ),
-#         plot_bgcolor="white",
-#         height=500
-#     )
+    fig = px.line(
+        df_melted,
+        x="Date",
+        y="Value",
+        color='Parameter',
+        color_discrete_sequence=['#2ca02c', '#d62728']
+    )
 
-#     st.plotly_chart(fig, use_container_width=True)
+    fig.update_layout(
+        font=dict(family="Jost", size=14),
+        legend=dict(title="", orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        xaxis=dict(title="Date", tickformat="%d/%m", tickangle=0),
+        yaxis=dict(title="Valeur"),
+        plot_bgcolor="white",
+        height=500
+    )
 
+    st.plotly_chart(fig, use_container_width=True)
 
     st.markdown(
     """
@@ -637,4 +623,79 @@ elif option == ['Laboratoir', 'Chantier']:
     </div>
     """,
     unsafe_allow_html=True
-)
+)    
+elif option == ['Scada', 'Chantier']:
+    # Charger SCADA
+    excel_file1 = pd.ExcelFile('SUIVI STANDART DIPS.xlsx')
+    sheet_names1 = excel_file1.sheet_names[1:]
+    st.sidebar.header("SCADA")
+    don1 = st.sidebar.selectbox("Phases de traitement (Scada):", sheet_names1)
+    df1 = pd.read_excel('SUIVI STANDART DIPS.xlsx', sheet_name=don1)
+
+    # Charger CHANTIER
+    excel_file2 = pd.ExcelFile('suivi 3h standart DIPS.xlsx')
+    sheet_names2 = excel_file2.sheet_names[1:]
+    st.sidebar.header("Chantier")
+    don2 = st.sidebar.selectbox("Phases de traitement (Chantier):", sheet_names2)
+    df2 = pd.read_excel('suivi 3h standart DIPS.xlsx', sheet_name=don2)
+
+    # Définir plage de dates
+    startDate = pd.to_datetime(df1["date"], format='%d/%m/%Y').min()
+    endDate = pd.to_datetime(df1["date"], format='%d/%m/%Y').max()
+    st.sidebar.subheader("Filtrer par période")
+    date1 = pd.to_datetime(st.sidebar.date_input("Date de début", startDate))
+    date2 = pd.to_datetime(st.sidebar.date_input("Date de fin", endDate))
+
+    # Nettoyage Scada
+    df1['date'] = pd.to_datetime(df1['date'], format='%d/%m/%Y')
+    df1 = df1[(df1["date"] >= date1) & (df1["date"] <= date2)]
+    df1['date'] = df1['date'].dt.strftime('%d/%m/%Y')
+
+    # Nettoyage Chantier
+    df2['date'] = pd.to_datetime(df2['date'], format='%d/%m/%Y')
+    df2 = df2[(df2["date"] >= date1) & (df2["date"] <= date2)]
+    df2['date'] = df2['date'].dt.strftime('%d/%m/%Y')
+
+    st.sidebar.markdown("<h3 style='color: #4A90E2;'>Sélectionnez un paramètre</h3>", unsafe_allow_html=True)
+
+    param1 = st.sidebar.selectbox('Paramètre Scada', [col for col in df1.columns if col not in ['date', 'poste']])
+    param2 = st.sidebar.selectbox('Paramètre Chantier', [col for col in df2.columns if col not in ['date', 'Heur']])
+
+    # Nettoyage des valeurs
+    df1[param1] = df1[param1].astype(str).str.replace(',', '.')
+    df1.replace(['-'], np.nan, inplace=True)
+    df1[param1] = pd.to_numeric(df1[param1], errors='coerce')
+    df1['Date'] = pd.to_datetime(df1['date'], format='%d/%m/%Y', errors='coerce')
+    # df1['Date'] = df1['date']
+
+    df2[param2] = df2[param2].astype(str).str.replace(',', '.')
+    df2.replace(['-'], np.nan, inplace=True)
+    df2[param2] = pd.to_numeric(df2[param2], errors='coerce')
+    df2['Date'] = pd.to_datetime(df2['date'], format='%d/%m/%Y', errors='coerce')
+    # df2['Date'] = df2['date'] + " " + df2['Heur'].astype(str)
+
+    # Fusion intelligente par date simple (tu peux faire plus précis par heure si besoin)
+    df_merge = pd.merge(df1[['Date', param1]], df2[['Date', param2]], on='Date', how='inner')
+
+    df_melted = df_merge.melt(id_vars='Date', var_name='Parameter', value_name='Value')
+
+    st.markdown(f"<h3 style='text-align: center;font-family:Jost;'>Corrélation entre {param1} (Scada) et {param2} (Chantier)</h3>", unsafe_allow_html=True)
+
+    fig = px.line(
+        df_melted,
+        x="Date",
+        y="Value",
+        color='Parameter',
+        color_discrete_sequence=['#17becf', '#bcbd22']
+    )
+
+    fig.update_layout(
+        font=dict(family="Jost", size=14),
+        legend=dict(title="", orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        xaxis=dict(title="Date", tickformat="%d/%m", tickangle=0),
+        yaxis=dict(title="Valeur"),
+        plot_bgcolor="white",
+        height=500
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
