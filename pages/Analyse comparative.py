@@ -102,10 +102,8 @@ if option == ['Laboratoir']:
     st.sidebar.header("Options de Visualisation")
     don = st.sidebar.radio("Phases de traitement :", sheet_names )
     df_labo = transform_laboratory_data('suivi qualité.xlsx', sheet_name=don)
-    # Charger la feuille sélectionnée
-    # df_labo = data_labo[don]
-
-    # Préparation des données
+    print(df_labo)
+  
     df_labo['date'] = pd.to_datetime(df_labo['date'])
     df_labo['date'] = df_labo['date'].dt.strftime('%d/%m/%Y')  # Format 'dd/mm/yyyy'
 

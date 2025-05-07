@@ -274,7 +274,7 @@ if st.sidebar.button('Apply'):
             height=400,
         )
 
-        fig.add_hline(y=15000, line_color="green", line_width=1)
+        fig.add_hline(y=15000, line_color="red", line_width=1)
         fig.add_annotation(
                     x=df['date'].iloc[-1], 
                     y=15000, 
@@ -430,7 +430,7 @@ if st.sidebar.button('Apply'):
             height=400,
         )
 
-        fig.add_hline(y=120000, line_color="green", line_width=2)
+        fig.add_hline(y=120000, line_color="red", line_width=2)
         fig.add_annotation(
                     x=df['date'].iloc[-1], 
                     y=120000, 
