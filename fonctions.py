@@ -19,73 +19,128 @@ import re
 
 
 
-def visualise(df,param):
+def visualise(df,params):
+    df.replace([
+        'wbw','soak ceb1','w-f','f','F','w-bw','WBW','W.BW','W,BW',
+        'ceb1','CEB2','bw','wf','wb','Wf','bW','W BW',
+        'W-F','W.F','hs','WF','wB','BW','w,b','W,F','W-BW','ceb2',
+        'SOAK CEB1','W,B','CEB1','SOAK CEB2','HS'
+    ], np.nan, inplace=True)
     
-    df.replace(['wbw','soak ceb1','w-f','f','F','w-bw','WBW','W.BW','W,BW','ceb1','CEB2','bw','wf','wb','W-F','W.F','hs','WF','wB','BW','w,b','W,F','W-BW','ceb2','SOAK CEB1','W,B','CEB1','SOAK CEB2','HS',
-                ], 
-               np.nan, inplace=True)
+    # Création d'une colonne de date combinée
     df['Date'] = df['date'].astype(str) + " " + df['poste'].astype(str)
+    
+    for param in params:
+        # Conteneur de titre stylisé
+        # st.markdown(
+        #     f"""
+        #     <div style="
+        #         background-color: #F9F9F9; 
+        #         border: 1px solid #D1D1D1; 
+        #         border-radius: 8px; 
+        #         padding: 20px; 
+        #         margin: 0 auto 20px auto; 
+        #         box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+        #         width: 60%;
+        #         max-width: 800px;
+        #     ">
+        #         <h2 style="
+        #             text-align: center; 
+        #             color: #4A90E2; 
+        #             font-family: Arial, sans-serif; 
+        #             margin-bottom: 0;
+        #         ">
+        #             {param.capitalize()} Journalièr: {np.around(df[param].dropna().iloc[-1], 2)}
+        #         </h2>
+        #     </div>
+        #     """, 
+        #     unsafe_allow_html=True
+        # )
+
+        # Graphique d’évolution temporelle
+        fig_line = px.line(
+            df,
+            x="Date",
+            y=param,
+            title=f"Évolution de {param.capitalize()} au fil du temps",
+            labels={"Date": "Date", param: param.capitalize()},
+            template="plotly_white",
+        )
+        fig_line.update_layout(
+            title=dict(text=f"Évolution de {param.capitalize()}", font=dict(size=20), x=0.5, xanchor="center"),
+            xaxis=dict(title_text="Date", tickangle=-45, showticklabels=False),
+            yaxis=dict(title_text=param.capitalize()),
+            margin=dict(l=50, r=50, t=60, b=40),
+            height=400,
+        )
+        st.plotly_chart(fig_line, use_container_width=True)
+
+   
+#     df.replace(['wbw','soak ceb1','w-f','f','F','w-bw','WBW','W.BW','W,BW','ceb1','CEB2','bw','wf','wb','W-F','W.F','hs','WF','wB','BW','w,b','W,F','W-BW','ceb2','SOAK CEB1','W,B','CEB1','SOAK CEB2','HS',
+#                 ], 
+#                np.nan, inplace=True)
+#     df['Date'] = df['date'].astype(str) + " " + df['poste'].astype(str)
    
 
-    # Conteneur professionnel avec largeur personnalisée
-    st.markdown(
-        f"""
-        <div style="
-            background-color: #F9F9F9; 
-            border: 1px solid #D1D1D1; 
-            border-radius: 8px; 
-            padding: 20px; 
-            margin: 0 auto 20px auto; 
-            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
-            width: 60%; /* Ajustez ce pourcentage selon vos besoins */
-            max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
-        ">
-            <h2 style="
-                text-align: center; 
-                color: #4A90E2; 
-                font-family: Arial, sans-serif; 
-                margin-bottom: 0;
-            ">
-                {param.capitalize()} Journalièr: {np.around(df[param].iloc[-1], 2)} 
-            </h2>
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
+#     # Conteneur professionnel avec largeur personnalisée
+#     st.markdown(
+#         f"""
+#         <div style="
+#             background-color: #F9F9F9; 
+#             border: 1px solid #D1D1D1; 
+#             border-radius: 8px; 
+#             padding: 20px; 
+#             margin: 0 auto 20px auto; 
+#             box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+#             width: 60%; /* Ajustez ce pourcentage selon vos besoins */
+#             max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+#         ">
+#             <h2 style="
+#                 text-align: center; 
+#                 color: #4A90E2; 
+#                 font-family: Arial, sans-serif; 
+#                 margin-bottom: 0;
+#             ">
+#                 {param.capitalize()} Journalièr: {np.around(df[param].iloc[-1], 2)} 
+#             </h2>
+#         </div>
+#         """, 
+#         unsafe_allow_html=True
+#     )
 
 
 
-    # Personnalisation du graphique avec un style moderne
-    fig = px.line(
-        df,
-        x="Date",
-        y=param,
-        title=f"Évolution de {param.capitalize()} au fil du temps",
-        labels={
-            "Date": "Date",
-            param: param.capitalize()
-        },
-        template="plotly_white",  # Thème moderne
-    )
-    fig.update_layout(
-    title=dict(
-        text=f"Évolution de {param.capitalize()}",
-        font=dict(size=20),
-        x=0.5,
-        xanchor="center"
-    ),
-    xaxis=dict(
-        title_text="Date",
-        tickangle=-45,
-        showticklabels=False  # This hides the date labels on the x-axis
-    ),
-    yaxis=dict(title_text=f"{param.capitalize()}"),
-    margin=dict(l=50, r=50, t=60, b=40),
-    height=400,
-)
+#     # Personnalisation du graphique avec un style moderne
+#     fig = px.line(
+#         df,
+#         x="Date",
+#         y=param,
+#         title=f"Évolution de {param.capitalize()} au fil du temps",
+#         labels={
+#             "Date": "Date",
+#             param: param.capitalize()
+#         },
+#         template="plotly_white",  # Thème moderne
+#     )
+#     fig.update_layout(
+#     title=dict(
+#         text=f"Évolution de {param.capitalize()}",
+#         font=dict(size=20),
+#         x=0.5,
+#         xanchor="center"
+#     ),
+#     xaxis=dict(
+#         title_text="Date",
+#         tickangle=-45,
+#         showticklabels=False  # This hides the date labels on the x-axis
+#     ),
+#     yaxis=dict(title_text=f"{param.capitalize()}"),
+#     margin=dict(l=50, r=50, t=60, b=40),
+#     height=400,
+# )
 
 
-    st.plotly_chart(fig, use_container_width=True)
+#     st.plotly_chart(fig, use_container_width=True)
 
 def consomation(df,param):
     st.markdown(f"<h2 style='text-align: center;'>{param[:-5]} moyen: {np.around(df[param].mean(),2)}</h2>", unsafe_allow_html=True)        

@@ -57,9 +57,6 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
-
-
-
 # Titre et description
 st.title("Production - Station Wave 2")
 st.markdown(

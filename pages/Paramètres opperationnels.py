@@ -102,25 +102,25 @@ df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
 df = df[(df["date"] >= date1) & (df["date"] <= date2)]
 df['date'] = df['date'].dt.strftime('%d/%m/%Y')  # Format pour affichage
 
-st.sidebar.markdown(
-    """
-    <h3 style="
-        color: #4A90E2; 
-        font-family: Arial, sans-serif; 
-        margin-bottom: 15px;
-    ">
-        Sélectionnez un paramètre
-    </h3>
-    """,
-    unsafe_allow_html=True
-)
+# st.sidebar.markdown(
+#     """
+#     <h3 style="
+#         color: #4A90E2; 
+#         font-family: Arial, sans-serif; 
+#         margin-bottom: 15px;
+#     ">
+#         Sélectionnez un paramètre
+#     </h3>
+#     """,
+#     unsafe_allow_html=True
+# )
 
-# Sélection du paramètre à visualiser
-param = st.sidebar.selectbox(
-    'Paramètre', 
-    df.columns[2:],
-    help="Choisissez un paramètre à afficher parmi les colonnes disponibles."
-    )
+# # Sélection du paramètre à visualiser
+# param = st.sidebar.selectbox(
+#     'Paramètre', 
+#     df.columns[2:],
+#     help="Choisissez un paramètre à afficher parmi les colonnes disponibles."
+#     )
 if st.sidebar.button('Apply'):
     # Style pour le titre de la phase
     st.markdown(
@@ -152,18 +152,18 @@ if st.sidebar.button('Apply'):
         unsafe_allow_html=True
     )
 
-    st.markdown(
-        f"""
-        <h3 style="
-            text-align: center; 
-            color: #4A90E2; 
-            font-family: Arial, sans-serif; 
-            margin-bottom: 20px;
-        ">
-            Visualisation de {param.capitalize()}
-        </h3>
-        """,
-        unsafe_allow_html=True
-    )
+    # st.markdown(
+    #     f"""
+    #     <h3 style="
+    #         text-align: center; 
+    #         color: #4A90E2; 
+    #         font-family: Arial, sans-serif; 
+    #         margin-bottom: 20px;
+    #     ">
+    #         Visualisation de {param.capitalize()}
+    #     </h3>
+    #     """,
+    #     unsafe_allow_html=True
+    # )
 
-    visualise(df, param)
+    visualise(df, df.columns[2:])

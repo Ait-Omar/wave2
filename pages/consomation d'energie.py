@@ -110,10 +110,10 @@ param = st.sidebar.selectbox(f"Paramètre à visualiser", df.columns[2:])
 # Visualisation des données
 def consomation_energie(df, param):
     # Indicateurs clés en haut
-    st.markdown(
-        f"<h3 style='text-align: center; color: #4A90E2;font-family:Jost;'> {param.capitalize()}</h3>",
-        unsafe_allow_html=True
-    )
+    # st.markdown(
+    #     f"<h3 style='text-align: center; color: #4A90E2;font-family:Jost;'> {param.capitalize()}</h3>",
+    #     unsafe_allow_html=True
+    # )
     if param == "Energie spécifique":
       st.markdown(
         """
@@ -176,7 +176,7 @@ def consomation_energie(df, param):
             color: #4A90E2; 
             font-family: Jost; 
             margin-bottom: 0;">
-            Consommation journalière : {np.around(df[param].iloc[-1],3)}
+            Consommation Cumulee (MWh) : {np.around(df[param].sum(),3)}
             </h2>
         </div>
         """, 
@@ -221,6 +221,16 @@ def consomation_energie(df, param):
         margin=dict(l=40, r=40, t=60, b=40),
         height=500,
     )
+    fig.add_hline(y=2.8, line_color="red", line_width=1)
+    fig.add_annotation(
+                    x=df['date'].iloc[-1], 
+                    y=2.8, 
+                    text="2.8 KWh",  
+                    showarrow=True, 
+                    arrowhead=2,  
+                    ax=0, 
+                    ay=-40  
+                )
 
     st.plotly_chart(fig, use_container_width=True)
 
