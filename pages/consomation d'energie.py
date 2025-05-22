@@ -115,7 +115,7 @@ def consomation_energie(df, param):
     #     unsafe_allow_html=True
     # )
     if param == "Energie spécifique":
-      st.markdown(
+        st.markdown(
         """
         <style>
         .kpi-box {
@@ -132,16 +132,67 @@ def consomation_energie(df, param):
         """,
         unsafe_allow_html=True
     )
-      st.markdown(
+    #   st.markdown(
+    #         f"""
+    #         <div class="kpi-box">
+    #             <h2 style="
+    #             text-align: center; 
+    #             color: #4A90E2; 
+    #             font-family: Jost; 
+    #             margin-bottom: 0;">
+    #             Energie spécifique : {np.around(df[param].iloc[-1],3)}
+    #             </h2>
+    #         </div>
+    #         """, 
+    #         unsafe_allow_html=True
+    #     )
+        col1,col2 = st.columns((2))
+        with col1:
+            st.markdown(
             f"""
-            <div class="kpi-box">
-                <h2 style="
-                text-align: center; 
-                color: #4A90E2; 
-                font-family: Jost; 
-                margin-bottom: 0;">
-                Energie spécifique : {np.around(df[param].iloc[-1],3)}
-                </h2>
+            <div style="
+                background-color: #F9F9F9; 
+                border: 1px solid #D1D1D1; 
+                border-radius: 8px; 
+                padding: 20px; 
+                margin: 0 auto 20px auto; 
+                box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+                width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+                max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+            ">
+                <h3 style="
+                    text-align: center; 
+                    color: #4A90E2; 
+                    font-family: Jost; 
+                    margin-bottom: 0;
+                ">
+                 Énergie spécifique : {np.around(df[param].iloc[-1],3)} (KWh/m³)
+                </h3>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+            with col2:
+                st.markdown(
+            f"""
+            <div style="
+                background-color: #F9F9F9; 
+                border: 1px solid #D1D1D1; 
+                border-radius: 8px; 
+                padding: 20px; 
+                margin: 0 auto 20px auto; 
+                box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+                width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+                max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+            ">
+                <h3 style="
+                    text-align: center; 
+                    color: #4A90E2; 
+                    font-family: Jost; 
+                    margin-bottom: 0;
+                ">
+                    Énergie spécifique moyenne (Mai) : {np.around(df[param].mean(),3)} 
+                </h3>
             </div>
             """, 
             unsafe_allow_html=True
@@ -168,25 +219,73 @@ def consomation_energie(df, param):
 
     # Colonne 1 : Moyenne
 
-        st.markdown(
-        f"""
-        <div class="kpi-box">
-            <h2 style="
-            text-align: center; 
-            color: #4A90E2; 
-            font-family: Jost; 
-            margin-bottom: 0;">
-            Consommation Cumulee (MWh) : {np.around(df[param].sum(),3)}
-            </h2>
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
+    #     st.markdown(
+    #     f"""
+    #     <div class="kpi-box">
+    #         <h2 style="
+    #         text-align: center; 
+    #         color: #4A90E2; 
+    #         font-family: Jost; 
+    #         margin-bottom: 0;">
+    #         Consommation Cumulee (MWh) : {np.around(df[param].sum(),3)}
+    #         </h2>
+    #     </div>
+    #     """, 
+    #     unsafe_allow_html=True
+    # )
 
-
-
-   
-
+        col1,col2 = st.columns((2))
+        with col2:
+            st.markdown(
+            f"""
+            <div style="
+                background-color: #F9F9F9; 
+                border: 1px solid #D1D1D1; 
+                border-radius: 8px; 
+                padding: 20px; 
+                margin: 0 auto 20px auto; 
+                box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+                width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+                max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+            ">
+                <h3 style="
+                    text-align: center; 
+                    color: #4A90E2; 
+                    font-family: Jost; 
+                    margin-bottom: 0;
+                ">
+                 Consommation Cumulee (MWh) : {np.around(df[param].sum(),3)}
+                </h3>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+            with col1:
+                st.markdown(
+            f"""
+            <div style="
+                background-color: #F9F9F9; 
+                border: 1px solid #D1D1D1; 
+                border-radius: 8px; 
+                padding: 20px; 
+                margin: 0 auto 20px auto; 
+                box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+                width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+                max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+            ">
+                <h3 style="
+                    text-align: center; 
+                    color: #4A90E2; 
+                    font-family: Jost; 
+                    margin-bottom: 0;
+                ">
+                    Consomation journalière (MWh) : {np.around(df[param].iloc[-1],2)}
+                </h3>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+            
 
     # Graphique de la tendance
     fig = px.line(
@@ -221,16 +320,17 @@ def consomation_energie(df, param):
         margin=dict(l=40, r=40, t=60, b=40),
         height=500,
     )
-    fig.add_hline(y=2.8, line_color="red", line_width=1)
-    fig.add_annotation(
-                    x=df['date'].iloc[-1], 
-                    y=2.8, 
-                    text="2.8 KWh",  
-                    showarrow=True, 
-                    arrowhead=2,  
-                    ax=0, 
-                    ay=-40  
-                )
+    if param == "Energie spécifique":
+        fig.add_hline(y=2.8, line_color="red", line_width=1)
+        fig.add_annotation(
+                        x=df['date'].iloc[-1], 
+                        y=2.8, 
+                        text="2.8 KWh",  
+                        showarrow=True, 
+                        arrowhead=2,  
+                        ax=0, 
+                        ay=-40  
+                    )
 
     st.plotly_chart(fig, use_container_width=True)
 

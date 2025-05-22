@@ -154,20 +154,71 @@ def consomation(df, param):
     )
 
 
-    st.markdown(
-        f"""
-        <div class="kpi-box">
-            <h2 style="
-            text-align: center; 
-            color: #4A90E2; 
-            font-family: Jost; 
-            margin-bottom: 0;">
-            Consommation journalière : {np.around(df[param].iloc[-1],3)}
-            </h2>
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
+    # st.markdown(
+    #     f"""
+    #     <div class="kpi-box">
+    #         <h2 style="
+    #         text-align: center; 
+    #         color: #4A90E2; 
+    #         font-family: Jost; 
+    #         margin-bottom: 0;">
+    #         Consommation journalière : {np.around(df[param].iloc[-1],3)}
+    #         </h2>
+    #     </div>
+    #     """, 
+    #     unsafe_allow_html=True
+    # )
+    col1,col2 = st.columns((2))
+    with col1:
+            st.markdown(
+            f"""
+            <div style="
+                background-color: #F9F9F9; 
+                border: 1px solid #D1D1D1; 
+                border-radius: 8px; 
+                padding: 20px; 
+                margin: 0 auto 20px auto; 
+                box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+                width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+                max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+            ">
+                <h3 style="
+                    text-align: center; 
+                    color: #4A90E2; 
+                    font-family: Jost; 
+                    margin-bottom: 0;
+                ">
+                 Consommation journalière : {np.around(df[param].iloc[-1],3)} L
+                </h3>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+            with col2:
+                st.markdown(
+            f"""
+            <div style="
+                background-color: #F9F9F9; 
+                border: 1px solid #D1D1D1; 
+                border-radius: 8px; 
+                padding: 20px; 
+                margin: 0 auto 20px auto; 
+                box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); 
+                width: 100%; /* Ajustez ce pourcentage selon vos besoins */
+                max-width: 800px; /* Largeur maximale pour éviter une trop grande expansion */
+            ">
+                <h3 style="
+                    text-align: center; 
+                    color: #4A90E2; 
+                    font-family: Jost; 
+                    margin-bottom: 0;
+                ">
+                    Consommation Cumulee : {np.around(df[param].sum(),3)} L
+                </h3>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
 
     fig = px.line(
         df,

@@ -200,7 +200,7 @@ if st.sidebar.button('Apply'):
                     font-family: Jost; 
                     margin-bottom: 0;
                 ">
-                    Ecart: {np.round(df[param].iloc[-1]-15000,2)} m³
+                    Taux: {np.round(df[param].iloc[-1]/15000*100,2)} %
                 </h3>
             </div>
             """, 
@@ -225,7 +225,7 @@ if st.sidebar.button('Apply'):
                     font-family: Jost; 
                     margin-bottom: 0;
                 ">
-                    Taux: {np.round(df[param].iloc[-1]/15000*100,2)} %
+                    Cumulee: {np.round(df[param].sum(),2)} m³
                 </h3>
             </div>
             """, 
@@ -354,10 +354,10 @@ if st.sidebar.button('Apply'):
                 <h3 style="
                     text-align: center; 
                     color: #4A90E2; 
-                    font-family: Jost; 
+                    font-family:Jost; 
                     margin-bottom: 0;
                 ">
-                    Ecart: {np.round(df[param].iloc[-1]-120000,2)} m³
+                    Taux: {np.round(df[param].iloc[-1]/120000*100,2)} %
                 </h3>
             </div>
             """, 
@@ -379,10 +379,10 @@ if st.sidebar.button('Apply'):
                 <h3 style="
                     text-align: center; 
                     color: #4A90E2; 
-                    font-family:Jost; 
+                    font-family: Jost; 
                     margin-bottom: 0;
                 ">
-                    Taux: {np.round(df[param].iloc[-1]/120000*100,2)} %
+                    Cumulee: {np.round(df[param].sum(),2)}
                 </h3>
             </div>
             """, 
